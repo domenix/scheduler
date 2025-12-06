@@ -296,6 +296,60 @@ h1:focus {
     transform: none;
 }
 
+.notes-section {
+    margin: 20px 0;
+    width: 100%;
+}
+
+.notes-section textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    resize: vertical;
+    box-sizing: border-box;
+    background: var(--bg-container);
+    color: var(--text-primary);
+}
+
+.notes-section textarea:focus {
+    outline: none;
+    border-color: var(--color-info);
+    box-shadow: 0 0 0 3px var(--color-info-light);
+}
+
+.stats-section {
+    display: flex;
+    gap: 30px;
+    padding: 15px;
+    background: var(--bg-section);
+    border-radius: 6px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-primary);
+    font-family: 'Courier New', monospace;
+}
+
 .add-actor-chip input {
     background: transparent;
     border: none;
@@ -658,9 +712,19 @@ input:focus, select:focus, textarea:focus {
     background: var(--color-drag-active);
 }
 
-.drag-over {
+.drag-over-before {
+    border-top: 4px solid var(--color-drag-border) !important;
+    box-shadow: 0 -2px 8px rgba(14, 165, 233, 0.3);
+}
+
+.drag-over-after {
+    border-bottom: 4px solid var(--color-drag-border) !important;
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+}
+
+.drag-over-swap {
     background: var(--color-drag-over) !important;
-    border: 2px solid var(--color-drag-border) !important;
+    box-shadow: inset 0 0 0 2px var(--color-drag-border);
 }
 
 .delete-btn {

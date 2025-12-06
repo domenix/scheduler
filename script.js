@@ -125,6 +125,7 @@ async function loadFromSupabase() {
 
 // Debounce timer for auto-save
 let autoSaveTimer = null;
+let notesDebounceTimer = null;
 
 // Auto-save function (saves to both localStorage and Supabase)
 async function autoSave() {
@@ -207,6 +208,7 @@ async function initializeData() {
     renderTable();
     updateTitle();
     updateDeleteDayButton();
+    updateDayNotes();
 }
 
 // Listen for online/offline events
@@ -308,6 +310,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Save notes when textarea is edited (debounced)
+    const notesTextarea = document.getElementById('dayNotes');
+    if (notesTextarea) {
+        notesTextarea.addEventListener('input', () => {
+            const day = getCurrentDay();
+            if (day) {
+                day.notes = notesTextarea.value;
+
+                // Debounce the save - wait 1 second after last keystroke
+                if (notesDebounceTimer) {
+                    clearTimeout(notesDebounceTimer);
+                }
+
+                notesDebounceTimer = setTimeout(() => {
+                    autoSave();
+                }, 1000);
+            }
+        });
+    }
 });
 
 // Helper to get current day scenes (for backward compatibility)
@@ -344,6 +366,16 @@ function switchDay(dayId) {
     renderActors();
     renderTable();
     updateDeleteDayButton();
+    updateDayNotes();
+}
+
+// Update the notes textarea with current day's notes
+function updateDayNotes() {
+    const notesTextarea = document.getElementById('dayNotes');
+    const day = getCurrentDay();
+    if (notesTextarea && day) {
+        notesTextarea.value = day.notes || '';
+    }
 }
 
 // Add a new day
@@ -432,6 +464,7 @@ let draggedElement = null;
 let isDraggingVertical = false;
 let swipeIndicator = null;
 let swipeThreshold = 80; // pixels to swipe inward to trigger optional
+let dropPosition = null; // 'before' or 'after'
 
 function handleDragStart(e) {
     draggedIndex = parseInt(e.currentTarget.dataset.index);
@@ -442,12 +475,38 @@ function handleDragOver(e) {
     e.preventDefault();
     const row = e.currentTarget;
 
-    // Remove drag-over from all rows
-    document.querySelectorAll('.drag-over').forEach(r => r.classList.remove('drag-over'));
+    // Remove drag-over classes from all rows
+    document.querySelectorAll('.drag-over-before, .drag-over-after, .drag-over-swap').forEach(r => {
+        r.classList.remove('drag-over-before', 'drag-over-after', 'drag-over-swap');
+    });
 
-    // Add to current row only
-    if (!row.classList.contains('break-row') && !row.classList.contains('dragging')) {
-        row.classList.add('drag-over');
+    if (row.classList.contains('dragging')) {
+        return;
+    }
+
+    // Get mouse position relative to the row
+    const rect = row.getBoundingClientRect();
+    const mouseY = e.clientY;
+    const rowTop = rect.top;
+    const rowHeight = rect.height;
+    const edgeThreshold = rowHeight * 0.25; // 25% of row height for edge detection
+
+    // Calculate position relative to row
+    const relativeY = mouseY - rowTop;
+
+    // Determine drop mode based on position
+    if (relativeY < edgeThreshold) {
+        // Near top edge - insert before
+        dropPosition = 'before';
+        row.classList.add('drag-over-before');
+    } else if (relativeY > rowHeight - edgeThreshold) {
+        // Near bottom edge - insert after
+        dropPosition = 'after';
+        row.classList.add('drag-over-after');
+    } else {
+        // Middle area - swap
+        dropPosition = 'swap';
+        row.classList.add('drag-over-swap');
     }
 }
 
@@ -456,20 +515,57 @@ function handleDrop(e) {
     const dropIndex = parseInt(e.currentTarget.dataset.index);
 
     if (draggedIndex !== null && draggedIndex !== dropIndex) {
-        // Save current data from inputs before swapping
+        // Save current data from inputs before moving
         saveCurrentData();
         const scenes = getActiveScenes();
 
-        // Preserve the first row's start time
-        const firstRowStartTime = scenes[0].startTime;
+        // Find the first scene (not makeup) to preserve schedule start time
+        let firstSceneIndex = -1;
+        for (let i = 0; i < scenes.length; i++) {
+            if (scenes[i].type === 'scene') {
+                firstSceneIndex = i;
+                break;
+            }
+        }
+        const scheduleStartTime = firstSceneIndex >= 0 ? scenes[firstSceneIndex].startTime : null;
 
-        // Swap the scenes
-        const temp = scenes[draggedIndex];
-        scenes[draggedIndex] = scenes[dropIndex];
-        scenes[dropIndex] = temp;
+        if (dropPosition === 'swap') {
+            // Swap mode - exchange positions
+            const temp = scenes[draggedIndex];
+            scenes[draggedIndex] = scenes[dropIndex];
+            scenes[dropIndex] = temp;
+        } else {
+            // Insert mode - move to new position
+            // Calculate the target insert position
+            let targetIndex = dropIndex;
+            if (dropPosition === 'after') {
+                targetIndex = dropIndex + 1;
+            }
 
-        // Ensure the first row always keeps the original start time
-        scenes[0].startTime = firstRowStartTime;
+            // Adjust target index if dragging downward
+            if (draggedIndex < targetIndex) {
+                targetIndex--;
+            }
+
+            // Only proceed if the position actually changed
+            if (draggedIndex !== targetIndex) {
+                // Remove item from its current position
+                const [movedItem] = scenes.splice(draggedIndex, 1);
+
+                // Insert at new position
+                scenes.splice(targetIndex, 0, movedItem);
+            }
+        }
+
+        // Restore the schedule start time to the first scene (wherever it is now)
+        if (scheduleStartTime) {
+            for (let i = 0; i < scenes.length; i++) {
+                if (scenes[i].type === 'scene') {
+                    scenes[i].startTime = scheduleStartTime;
+                    break;
+                }
+            }
+        }
 
         // Re-render (scene numbers will auto-update from index)
         renderTable();
@@ -479,10 +575,11 @@ function handleDrop(e) {
 
 function handleDragEnd(e) {
     e.currentTarget.classList.remove('dragging');
-    document.querySelectorAll('.drag-over').forEach(row => {
-        row.classList.remove('drag-over');
+    document.querySelectorAll('.drag-over-before, .drag-over-after, .drag-over-swap').forEach(row => {
+        row.classList.remove('drag-over-before', 'drag-over-after', 'drag-over-swap');
     });
     draggedIndex = null;
+    dropPosition = null;
 }
 
 // Touch event handlers for mobile devices
@@ -712,21 +809,29 @@ function performSanityChecks() {
     // Check 3: Actor scene overlaps with makeup time
     let sceneRowIndex = 0;
 
-    // Build a map of all actor makeup times
+    // Build a map of all actor makeup times by reading directly from DOM
     const actorMakeupTimes = {};
-    scenes.forEach((item, index) => {
-        if (item.type === 'actor-break' && item.actorIds && item.actorIds.length > 0 && item.startTime) {
-            const makeupStart = timeToMinutes(item.startTime);
-            const makeupEnd = makeupStart + (parseInt(item.duration) || 15);
+    const makeupRows = document.querySelectorAll('#scheduleBody tr.actor-break-row');
 
-            item.actorIds.forEach(actorId => {
+    makeupRows.forEach((makeupRow) => {
+        const startTimeInput = makeupRow.querySelector('.start-time');
+        const endTimeCell = makeupRow.querySelector('.end-time');
+        const actorDropZone = makeupRow.querySelector('.actor-drop-zone');
+
+        if (startTimeInput && startTimeInput.value && endTimeCell && endTimeCell.textContent !== '--:--') {
+            const makeupStart = timeToMinutes(startTimeInput.value);
+            const makeupEnd = timeToMinutes(endTimeCell.textContent);
+
+            // Get actor IDs from the chips in the drop zone
+            const actorChips = actorDropZone.querySelectorAll('.scene-actor-chip');
+            actorChips.forEach(chip => {
+                const actorId = chip.dataset.actorId;
                 if (!actorMakeupTimes[actorId]) {
                     actorMakeupTimes[actorId] = [];
                 }
                 actorMakeupTimes[actorId].push({
                     start: makeupStart,
-                    end: makeupEnd,
-                    sceneIndex: index
+                    end: makeupEnd
                 });
             });
         }
@@ -786,7 +891,7 @@ function performSanityChecks() {
                 const titleCell = row.querySelector('td:nth-child(3)');
                 const warningSpan = document.createElement('span');
                 warningSpan.className = 'overlap-warning-indicator';
-                warningSpan.innerHTML = ' ⚠️ MAKEUP';
+                warningSpan.innerHTML = ` ⚠️ MAKEUP (${overlappingActors.join(', ')})`;
                 warningSpan.title = `Scene conflicts with makeup time for: ${overlappingActors.join(', ')}`;
                 warningSpan.style.color = 'var(--color-danger)';
                 warningSpan.style.fontWeight = '600';
@@ -821,7 +926,6 @@ function calculateTimes() {
             currentTime = timeToMinutes(startInput.value);
         } else {
             startInput.value = minutesToTime(currentTime);
-            scenes[index].startTime = startInput.value;
         }
 
         // Use 0 for duration and break if scene is skipped, otherwise use actual values
@@ -873,6 +977,48 @@ function calculateTimes() {
 
     // Perform sanity checks after calculating times
     performSanityChecks();
+
+    // Update stats
+    updateStats();
+}
+
+function updateStats() {
+    const scenes = getActiveScenes();
+    let totalSceneMinutes = 0;
+    let totalBreakMinutes = 0;
+
+    scenes.forEach(item => {
+        if (item.type === 'actor-break') {
+            // Skip makeup/actor breaks
+            return;
+        }
+
+        // Add scene duration (0 if skipped)
+        const duration = item.skipped ? 0 : (parseInt(item.duration) || 0);
+        totalSceneMinutes += duration;
+
+        // Add break after duration (0 if skipped)
+        const breakDuration = item.skipped ? 0 : (parseInt(item.breakAfter) || 0);
+        totalBreakMinutes += breakDuration;
+    });
+
+    // Format as hours and minutes
+    const sceneHours = Math.floor(totalSceneMinutes / 60);
+    const sceneMinutes = totalSceneMinutes % 60;
+    const breakHours = Math.floor(totalBreakMinutes / 60);
+    const breakMinutes = totalBreakMinutes % 60;
+
+    // Update DOM
+    const totalSceneTimeEl = document.getElementById('totalSceneTime');
+    const totalBreakTimeEl = document.getElementById('totalBreakTime');
+
+    if (totalSceneTimeEl) {
+        totalSceneTimeEl.textContent = `${sceneHours}h ${sceneMinutes}m`;
+    }
+
+    if (totalBreakTimeEl) {
+        totalBreakTimeEl.textContent = `${breakHours}h ${breakMinutes}m`;
+    }
 }
 
 function saveCurrentData() {
@@ -913,7 +1059,7 @@ function saveCurrentData() {
                         if (textareas[1]) scenes[i].location = textareas[1].value;
                         if (numInputs[0]) scenes[i].duration = parseInt(numInputs[0].value) || 0;
                         if (numInputs[1]) scenes[i].breakAfter = parseInt(numInputs[1].value) || 0;
-                        if (i === 0 || (i > 0 && scenes[0].type === 'scene' && currentSceneIndex === 0)) {
+                        if (currentSceneIndex === 0) {
                             if (timeInput) scenes[i].startTime = timeInput.value;
                         }
                         // actors field is now managed via actorIds (drop zone), skip textarea
@@ -1025,14 +1171,14 @@ function renderTable() {
                 <td class="drag-handle">⋮⋮</td>
                 <td>👤</td>
                 <td><textarea>${item.title || 'Makeup'}</textarea></td>
+                <td data-scene-index="${index}">
+                    <div class="actor-drop-zone">${actorChips}</div>
+                </td>
                 <td></td>
                 <td><input type="number" class="duration small-input" value="${item.duration || 15}" min="1" onchange="calculateTimes()"></td>
                 <td></td>
                 <td class="time-cell"><input type="time" class="start-time" value="${item.startTime || ''}" onchange="calculateTimes()"></td>
                 <td class="time-cell end-time">${endTime}</td>
-                <td data-scene-index="${index}">
-                    <div class="actor-drop-zone">${actorChips}</div>
-                </td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -1136,12 +1282,12 @@ function renderTable() {
                 <td class="drag-handle">⋮⋮</td>
                 <td>${sceneNumber}</td>
                 <td><textarea>${item.title}</textarea></td>
+                <td data-scene-index="${index}"><div class="actor-drop-zone">${actorChips}</div></td>
                 <td><textarea>${item.location}</textarea></td>
                 <td><input type="number" class="duration small-input" value="${item.duration}" min="1" onchange="calculateTimes()"></td>
                 <td><input type="number" class="break-after small-input" value="${item.breakAfter}" min="0" onchange="calculateTimes()"></td>
-                <td class="time-cell"><input type="time" class="start-time" value="${item.startTime}" ${index > 0 ? 'readonly style="background: #e8f5e9;"' : ''} ${index === 0 ? 'onchange="calculateTimes()"' : ''}></td>
+                <td class="time-cell"><input type="time" class="start-time" value="${item.startTime}" ${sceneNumber > 1 ? 'readonly style="background: #e8f5e9;"' : ''} ${sceneNumber === 1 ? 'onchange="calculateTimes()"' : ''}></td>
                 <td class="time-cell end-time">--:--</td>
-                <td data-scene-index="${index}"><div class="actor-drop-zone">${actorChips}</div></td>
                 <td><textarea>${item.style}</textarea></td>
                 <td><textarea>${item.accessories}</textarea></td>
                 <td><textarea>${item.equipment}</textarea></td>
