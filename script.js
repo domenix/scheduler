@@ -235,22 +235,22 @@ let shootData = {
             defaultStartTime: "09:30",
             actors: [],
             scenes: [
-                {scene: 1, title: "Sensual foot sniff", location: "1", duration: 15, breakAfter: 0, startTime: "10:30", actors: "Tamara (Anon)", style: "ab", accessories: "Blue jeans, Grey/brown boots, grey/white socks", equipment: "Dave mask, Tereza Mask", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 2, title: "The Pose Pt. 1", location: "1", duration: 15, breakAfter: 0, startTime: "", actors: "Tamara", style: "ab", accessories: "Blue jeans, Grey/brown boots, grey/white socks", equipment: "", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 3, title: "The Pose Pt. 2", location: "1", duration: 15, breakAfter: 5, startTime: "", actors: "Tamara", style: "ab", accessories: "Jeans / Nude, Grey/brown boots, grey/white socks", equipment: "Anklet?", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 4, title: "Foot caressing", location: "1", duration: 15, breakAfter: 5, startTime: "", actors: "Tamara", style: "ab", accessories: "Full nude", equipment: "Anklet, rings", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 5, title: "Hairbrush tickling", location: "1", duration: 15, breakAfter: 30, startTime: "", actors: "Tamara", style: "ab", accessories: "Full nude", equipment: "Black gloves, hairbrush", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 6, title: "Energy drink pour", location: "3", duration: 15, breakAfter: 5, startTime: "", actors: "Tamara", style: "ab", accessories: "Formal dress, Fishnet", equipment: "White monster", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 7, title: "Champagne", location: "3", duration: 10, breakAfter: 10, startTime: "", actors: "Tamara", style: "ab", accessories: "Formal dress, Stockings", equipment: "Champagne", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 8, title: "Honey drizzle", location: "3", duration: 15, breakAfter: 5, startTime: "", actors: "Tamara", style: "ab", accessories: "Lingerie without bra", equipment: "", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 9, title: "Dirty feet Pt. 1", location: "3", duration: 15, breakAfter: 0, startTime: "", actors: "Tamara", style: "ab", accessories: "Lingerie without bra", equipment: "Coffee, banana, oil, book, liquid chocolate, basin", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 10, title: "Dirty feet Pt. 2", location: "3", duration: 15, breakAfter: 5, startTime: "", actors: "Tamara", style: "ab", accessories: "Lingerie without bra", equipment: "Book, whipped cream", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 11, title: "Foot washing", location: "3", duration: 10, breakAfter: 0, startTime: "", actors: "Tamara", style: "ab", accessories: "Lingerie without bra", equipment: "Sponge, bucket, black gloves", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 12, title: "Foot massage", location: "3", duration: 15, breakAfter: 0, startTime: "", actors: "Tamara", style: "ab ab", accessories: "Lingerie without bra", equipment: "Black gloves, lotion, oil", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 13, title: "Fruit play", location: "3", duration: 10, breakAfter: 5, startTime: "", actors: "Tamara", style: "ab", accessories: "Lingerie without bra", equipment: "Tray/plate, orange", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 14, title: "Nude shower", location: "2", duration: 15, breakAfter: 30, startTime: "", actors: "Tamara", style: "ab", accessories: "Nude", equipment: "", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 15, title: "Socks show", location: "1", duration: 10, breakAfter: 0, startTime: "", actors: "Tamara", style: "ab", accessories: "Blue jeans, Sneaker, hoodie, White striped socks", equipment: "", notes: "", skipped: false, optional: false, type: "scene"},
-                {scene: 16, title: "Tickling", location: "1", duration: 10, breakAfter: 0, startTime: "", actors: "Tamara", style: "ab", accessories: "Blue jeans, Sneaker, hoodie", equipment: "", notes: "WRAP-UP", skipped: false, optional: false, type: "scene"}
+                {scene: 1, title: "Sensual foot sniff", location: "1", duration: 15, breakAfter: 0, startTime: "10:30", actors: "Tamara (Anon)", style: "ab", accessories: "Blue jeans, Grey/brown boots, grey/white socks", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 2, title: "The Pose Pt. 1", location: "1", duration: 15, breakAfter: 0, startTime: "", actors: "Tamara", style: "ab", accessories: "Blue jeans, Grey/brown boots, grey/white socks", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 3, title: "The Pose Pt. 2", location: "1", duration: 15, breakAfter: 5, startTime: "", actors: "Tamara", style: "ab", accessories: "Jeans / Nude, Grey/brown boots, grey/white socks", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 4, title: "Foot caressing", location: "1", duration: 15, breakAfter: 5, startTime: "", actors: "Tamara", style: "ab", accessories: "Full nude", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 5, title: "Hairbrush tickling", location: "1", duration: 15, breakAfter: 30, startTime: "", actors: "Tamara", style: "ab", accessories: "Full nude", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 6, title: "Energy drink pour", location: "3", duration: 15, breakAfter: 5, startTime: "", actors: "Tamara", style: "ab", accessories: "Formal dress, Fishnet", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 7, title: "Champagne", location: "3", duration: 10, breakAfter: 10, startTime: "", actors: "Tamara", style: "ab", accessories: "Formal dress, Stockings", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 8, title: "Honey drizzle", location: "3", duration: 15, breakAfter: 5, startTime: "", actors: "Tamara", style: "ab", accessories: "Lingerie without bra", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 9, title: "Dirty feet Pt. 1", location: "3", duration: 15, breakAfter: 0, startTime: "", actors: "Tamara", style: "ab", accessories: "Lingerie without bra", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 10, title: "Dirty feet Pt. 2", location: "3", duration: 15, breakAfter: 5, startTime: "", actors: "Tamara", style: "ab", accessories: "Lingerie without bra", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 11, title: "Foot washing", location: "3", duration: 10, breakAfter: 0, startTime: "", actors: "Tamara", style: "ab", accessories: "Lingerie without bra", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 12, title: "Foot massage", location: "3", duration: 15, breakAfter: 0, startTime: "", actors: "Tamara", style: "ab ab", accessories: "Lingerie without bra", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 13, title: "Fruit play", location: "3", duration: 10, breakAfter: 5, startTime: "", actors: "Tamara", style: "ab", accessories: "Lingerie without bra", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 14, title: "Nude shower", location: "2", duration: 15, breakAfter: 30, startTime: "", actors: "Tamara", style: "ab", accessories: "Nude", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 15, title: "Socks show", location: "1", duration: 10, breakAfter: 0, startTime: "", actors: "Tamara", style: "ab", accessories: "Blue jeans, Sneaker, hoodie, White striped socks", notes: "", skipped: false, optional: false, type: "scene"},
+                {scene: 16, title: "Tickling", location: "1", duration: 10, breakAfter: 0, startTime: "", actors: "Tamara", style: "ab", accessories: "Blue jeans, Sneaker, hoodie", notes: "WRAP-UP", skipped: false, optional: false, type: "scene"}
             ]
         }
     ],
@@ -943,10 +943,10 @@ function calculateTimes() {
             if (!nextRow || !nextRow.classList.contains('break-row')) {
                 const breakRow = document.createElement('tr');
                 breakRow.className = 'break-row';
-                breakRow.innerHTML = `<td colspan="14" style="text-align: center;">⏸️ BREAK ${breakDuration} minutes</td>`;
+                breakRow.innerHTML = `<td colspan="13" style="text-align: center;">⏸️ BREAK ${breakDuration} minutes</td>`;
                 row.parentNode.insertBefore(breakRow, row.nextSibling);
             } else {
-                nextRow.innerHTML = `<td colspan="14" style="text-align: center;">⏸️ BREAK ${breakDuration} minutes</td>`;
+                nextRow.innerHTML = `<td colspan="13" style="text-align: center;">⏸️ BREAK ${breakDuration} minutes</td>`;
             }
         } else {
             if (nextRow && nextRow.classList.contains('break-row')) {
@@ -984,8 +984,10 @@ function calculateTimes() {
 
 function updateStats() {
     const scenes = getActiveScenes();
+    const day = getCurrentDay();
     let totalSceneMinutes = 0;
     let totalBreakMinutes = 0;
+    const actorCombinations = {};
 
     scenes.forEach(item => {
         if (item.type === 'actor-break') {
@@ -1000,6 +1002,14 @@ function updateStats() {
         // Add break after duration (0 if skipped)
         const breakDuration = item.skipped ? 0 : (parseInt(item.breakAfter) || 0);
         totalBreakMinutes += breakDuration;
+
+        // Track actor combinations (skip skipped scenes)
+        if (!item.skipped && item.actorIds && item.actorIds.length > 0) {
+            // Sort actor IDs to ensure consistent key ordering
+            const sortedActorIds = [...item.actorIds].sort();
+            const key = sortedActorIds.join('|'); // Use | as separator to avoid conflicts
+            actorCombinations[key] = (actorCombinations[key] || 0) + 1;
+        }
     });
 
     // Format as hours and minutes
@@ -1007,10 +1017,15 @@ function updateStats() {
     const sceneMinutes = totalSceneMinutes % 60;
     const breakHours = Math.floor(totalBreakMinutes / 60);
     const breakMinutes = totalBreakMinutes % 60;
+    
+    const totalShootMinutes = totalSceneMinutes + totalBreakMinutes;
+    const shootHours = Math.floor(totalShootMinutes / 60);
+    const shootMinutes = totalShootMinutes % 60;
 
     // Update DOM
     const totalSceneTimeEl = document.getElementById('totalSceneTime');
     const totalBreakTimeEl = document.getElementById('totalBreakTime');
+    const totalShootTimeEl = document.getElementById('totalShootTime');
 
     if (totalSceneTimeEl) {
         totalSceneTimeEl.textContent = `${sceneHours}h ${sceneMinutes}m`;
@@ -1018,6 +1033,35 @@ function updateStats() {
 
     if (totalBreakTimeEl) {
         totalBreakTimeEl.textContent = `${breakHours}h ${breakMinutes}m`;
+    }
+
+    if (totalShootTimeEl) {
+        totalShootTimeEl.textContent = `${shootHours}h ${shootMinutes}m`;
+    }
+
+    // Update actor pairs
+    const actorPairsEl = document.getElementById('actorPairs');
+    const actorPairsSectionEl = document.getElementById('actorPairsSection');
+
+    if (actorPairsEl && actorPairsSectionEl && day) {
+        const pairStrings = [];
+
+        // Convert actor combinations to readable format
+        Object.entries(actorCombinations).forEach(([key, count]) => {
+            const actorIds = key.split('|');
+            const actorNames = actorIds.map(actorId => {
+                const actor = day.actors.find(a => a.id === actorId);
+                return actor ? actor.name : actorId;
+            });
+            pairStrings.push(`${actorNames.join('-')} (${count})`);
+        });
+
+        if (pairStrings.length > 0) {
+            actorPairsEl.textContent = pairStrings.join(', ');
+            actorPairsSectionEl.style.display = '';
+        } else {
+            actorPairsSectionEl.style.display = 'none';
+        }
     }
 }
 
@@ -1065,8 +1109,7 @@ function saveCurrentData() {
                         // actors field is now managed via actorIds (drop zone), skip textarea
                         if (textareas[2]) scenes[i].style = textareas[2].value;
                         if (textareas[3]) scenes[i].accessories = textareas[3].value;
-                        if (textareas[4]) scenes[i].equipment = textareas[4].value;
-                        if (textareas[5]) scenes[i].notes = textareas[5].value;
+                        if (textareas[4]) scenes[i].notes = textareas[4].value;
                         break;
                     }
                     currentSceneIndex++;
@@ -1132,6 +1175,148 @@ function addMakeup() {
     autoSave();
 }
 
+// Helper function to build actor chips
+function buildActorChips(item, index) {
+    const day = getCurrentDay();
+    const sortedActorIds = (item.actorIds || []).slice().sort((a, b) => {
+        const actorA = day.actors.find(actor => actor.id === a);
+        const actorB = day.actors.find(actor => actor.id === b);
+        if (!actorA || !actorB) return 0;
+        return actorA.name.localeCompare(actorB.name);
+    });
+    return sortedActorIds.map(actorId => {
+        const actor = day.actors.find(a => a.id === actorId);
+        if (!actor) return '';
+        const actorIndex = day.actors.findIndex(a => a.id === actorId);
+        const color = getActorColor(actorIndex);
+        return `<div class="scene-actor-chip" data-actor-id="${actorId}" style="background-color: ${color};">
+            <span>${actor.name}</span>
+            <span class="remove">×</span>
+        </div>`;
+    }).join('');
+}
+
+// Helper function to build row HTML
+function buildRowHTML(item, index, sceneNumber) {
+    const actorChips = buildActorChips(item, index);
+    const day = getCurrentDay();
+    
+    if (item.type === 'actor-break') {
+        const endTime = item.startTime ? minutesToTime(timeToMinutes(item.startTime) + (item.duration || 15)) : '--:--';
+        return `
+            <td class="drag-handle">⋮⋮</td>
+            <td>👤</td>
+            <td><textarea>${item.title || 'Makeup'}</textarea></td>
+            <td data-scene-index="${index}"><div class="actor-drop-zone">${actorChips}</div></td>
+            <td></td>
+            <td><input type="number" class="duration small-input" value="${item.duration || 15}" min="1" onchange="calculateTimes()"></td>
+            <td></td>
+            <td class="time-cell"><input type="time" class="start-time" value="${item.startTime || ''}" onchange="calculateTimes()"></td>
+            <td class="time-cell end-time">${endTime}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><button class="delete-btn" onclick="deleteRow(${index}, event)">DEL</button></td>
+        `;
+    } else {
+        return `
+            <td class="drag-handle">⋮⋮</td>
+            <td>${sceneNumber}</td>
+            <td><textarea>${item.title}</textarea></td>
+            <td data-scene-index="${index}"><div class="actor-drop-zone">${actorChips}</div></td>
+            <td><textarea>${item.location}</textarea></td>
+            <td><input type="number" class="duration small-input" value="${item.duration}" min="1" onchange="calculateTimes()"></td>
+            <td><input type="number" class="break-after small-input" value="${item.breakAfter}" min="0" onchange="calculateTimes()"></td>
+            <td class="time-cell"><input type="time" class="start-time" value="${item.startTime}" ${sceneNumber > 1 ? 'readonly style="background: #e8f5e9;"' : ''} ${sceneNumber === 1 ? 'onchange="calculateTimes()"' : ''}></td>
+            <td class="time-cell end-time">--:--</td>
+            <td><textarea>${item.style}</textarea></td>
+            <td><textarea>${item.accessories}</textarea></td>
+            <td><textarea>${item.notes}</textarea></td>
+            <td>
+                <button class="skip-btn ${item.skipped ? 'active' : ''}" onclick="toggleSkip(${index})" title="${item.skipped ? 'Unskip scene' : 'Skip scene'}">${item.skipped ? 'UNSKIP' : 'SKIP'}</button>
+                <button class="delete-btn" onclick="deleteRow(${index}, event)">DEL</button>
+            </td>
+        `;
+    }
+}
+
+// Helper function to setup actor drop zone listeners
+function setupActorDropZone(row, index) {
+    const actorCell = row.querySelector('.actor-drop-zone');
+    if (!actorCell) return;
+
+    // Remove actor chip on click
+    actorCell.addEventListener('click', (e) => {
+        const chip = e.target.closest('.scene-actor-chip');
+        if (chip) {
+            const actorId = chip.dataset.actorId;
+            const sceneIndex = parseInt(actorCell.parentElement.dataset.sceneIndex);
+            const scenes = getActiveScenes();
+            if (scenes[sceneIndex].actorIds) {
+                scenes[sceneIndex].actorIds = scenes[sceneIndex].actorIds.filter(id => id !== actorId);
+                renderTable();
+                autoSave();
+            }
+            return;
+        }
+
+        if (e.target.closest('.scene-actor-chip')) return;
+
+        if (selectedActorId) {
+            const sceneIndex = parseInt(actorCell.parentElement.dataset.sceneIndex);
+            const scenes = getActiveScenes();
+            if (!scenes[sceneIndex].actorIds) scenes[sceneIndex].actorIds = [];
+            if (!scenes[sceneIndex].actorIds.includes(selectedActorId)) {
+                scenes[sceneIndex].actorIds.push(selectedActorId);
+                selectedActorId = null;
+                renderTable();
+                renderActors();
+                autoSave();
+            }
+        }
+    });
+
+    // Desktop drag and drop
+    actorCell.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        actorCell.style.background = '#e3f2fd';
+    });
+    actorCell.addEventListener('dragleave', () => {
+        actorCell.style.background = '';
+    });
+    actorCell.addEventListener('drop', (e) => {
+        e.preventDefault();
+        actorCell.style.background = '';
+        const actorId = e.dataTransfer.getData('actorId');
+        if (actorId) {
+            const sceneIndex = parseInt(actorCell.parentElement.dataset.sceneIndex);
+            const scenes = getActiveScenes();
+            if (!scenes[sceneIndex].actorIds) scenes[sceneIndex].actorIds = [];
+            if (!scenes[sceneIndex].actorIds.includes(actorId)) {
+                scenes[sceneIndex].actorIds.push(actorId);
+                renderTable();
+                autoSave();
+            }
+        }
+    });
+
+    // Add remove listeners to scene actor chips
+    actorCell.querySelectorAll('.scene-actor-chip .remove').forEach(removeBtn => {
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const chip = removeBtn.closest('.scene-actor-chip');
+            const actorId = chip.dataset.actorId;
+            const sceneIndex = parseInt(actorCell.parentElement.dataset.sceneIndex);
+            const scenes = getActiveScenes();
+            if (scenes[sceneIndex].actorIds) {
+                scenes[sceneIndex].actorIds = scenes[sceneIndex].actorIds.filter(id => id !== actorId);
+                renderTable();
+                autoSave();
+            }
+        });
+    });
+}
+
 function renderTable() {
     const tbody = document.getElementById('scheduleBody');
     tbody.innerHTML = '';
@@ -1139,235 +1324,42 @@ function renderTable() {
 
     let sceneNumber = 1;
     scenes.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.draggable = true;
+        row.dataset.index = index;
+
+        // Apply classes based on item type and state
         if (item.type === 'actor-break') {
-            // Render actor break row
-            const breakRow = document.createElement('tr');
-            breakRow.className = 'actor-break-row';
-            breakRow.draggable = true;
-            breakRow.dataset.index = index;
-
-            breakRow.addEventListener('dragstart', handleDragStart);
-            breakRow.addEventListener('dragover', handleDragOver);
-            breakRow.addEventListener('drop', handleDrop);
-            breakRow.addEventListener('dragend', handleDragEnd);
-            breakRow.addEventListener('touchstart', handleTouchStart);
-            breakRow.addEventListener('touchmove', handleTouchMove);
-            breakRow.addEventListener('touchend', handleTouchEnd);
-
-            const day = getCurrentDay();
-            const actorChips = (item.actorIds || []).map(actorId => {
-                const actor = day.actors.find(a => a.id === actorId);
-                if (!actor) return '';
-                const actorIndex = day.actors.findIndex(a => a.id === actorId);
-                const color = getActorColor(actorIndex);
-                return `<div class="scene-actor-chip" data-actor-id="${actorId}" style="background-color: ${color};">
-                    <span>${actor.name}</span>
-                    <span class="remove">×</span>
-                </div>`;
-            }).join('');
-
-            const endTime = item.startTime ? minutesToTime(timeToMinutes(item.startTime) + (item.duration || 15)) : '--:--';
-            breakRow.innerHTML = `
-                <td class="drag-handle">⋮⋮</td>
-                <td>👤</td>
-                <td><textarea>${item.title || 'Makeup'}</textarea></td>
-                <td data-scene-index="${index}">
-                    <div class="actor-drop-zone">${actorChips}</div>
-                </td>
-                <td></td>
-                <td><input type="number" class="duration small-input" value="${item.duration || 15}" min="1" onchange="calculateTimes()"></td>
-                <td></td>
-                <td class="time-cell"><input type="time" class="start-time" value="${item.startTime || ''}" onchange="calculateTimes()"></td>
-                <td class="time-cell end-time">${endTime}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><button class="delete-btn" onclick="deleteRow(${index}, event)">DEL</button></td>
-            `;
-            tbody.appendChild(breakRow);
-
-            // Add event listeners for actor drop zone
-            const actorCell = breakRow.querySelector('.actor-drop-zone');
-
-            // Remove actor chip on click
-            actorCell.addEventListener('click', (e) => {
-                const chip = e.target.closest('.scene-actor-chip');
-                if (chip) {
-                    const actorId = chip.dataset.actorId;
-                    const sceneIndex = parseInt(actorCell.parentElement.dataset.sceneIndex);
-                    const scenes = getActiveScenes();
-                    if (scenes[sceneIndex].actorIds) {
-                        scenes[sceneIndex].actorIds = scenes[sceneIndex].actorIds.filter(id => id !== actorId);
-                        renderTable();
-                        autoSave();
-                    }
-                    return;
-                }
-
-                if (e.target.closest('.scene-actor-chip')) return;
-
-                if (selectedActorId) {
-                    const sceneIndex = parseInt(actorCell.parentElement.dataset.sceneIndex);
-                    const scenes = getActiveScenes();
-                    if (!scenes[sceneIndex].actorIds) scenes[sceneIndex].actorIds = [];
-                    if (!scenes[sceneIndex].actorIds.includes(selectedActorId)) {
-                        scenes[sceneIndex].actorIds.push(selectedActorId);
-                        selectedActorId = null;
-                        renderTable();
-                        renderActors();
-                        autoSave();
-                    }
-                }
-            });
-
-            // Desktop drag and drop
-            actorCell.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                actorCell.style.background = '#e3f2fd';
-            });
-            actorCell.addEventListener('dragleave', () => {
-                actorCell.style.background = '';
-            });
-            actorCell.addEventListener('drop', (e) => {
-                e.preventDefault();
-                actorCell.style.background = '';
-                const actorId = e.dataTransfer.getData('actorId');
-                if (actorId) {
-                    const sceneIndex = parseInt(actorCell.parentElement.dataset.sceneIndex);
-                    const scenes = getActiveScenes();
-                    if (!scenes[sceneIndex].actorIds) scenes[sceneIndex].actorIds = [];
-                    if (!scenes[sceneIndex].actorIds.includes(actorId)) {
-                        scenes[sceneIndex].actorIds.push(actorId);
-                        renderTable();
-                        autoSave();
-                    }
-                }
-            });
+            row.className = 'actor-break-row';
         } else {
-            // Render regular scene row
-            const row = document.createElement('tr');
-            row.draggable = true;
-            row.dataset.index = index;
+            if (item.skipped) row.classList.add('skipped-row');
+            if (item.optional) row.classList.add('optional-row');
+        }
 
-            if (item.skipped) {
-                row.classList.add('skipped-row');
-            }
+        // Add drag and touch event listeners
+        row.addEventListener('dragstart', handleDragStart);
+        row.addEventListener('dragover', handleDragOver);
+        row.addEventListener('drop', handleDrop);
+        row.addEventListener('dragend', handleDragEnd);
+        row.addEventListener('touchstart', handleTouchStart);
+        row.addEventListener('touchmove', handleTouchMove);
+        row.addEventListener('touchend', handleTouchEnd);
 
-            if (item.optional) {
-                row.classList.add('optional-row');
-            }
+        // Set row HTML
+        row.innerHTML = buildRowHTML(item, index, sceneNumber);
+        
+        // Setup actor drop zone listeners
+        setupActorDropZone(row, index);
 
-            row.addEventListener('dragstart', handleDragStart);
-            row.addEventListener('dragover', handleDragOver);
-            row.addEventListener('drop', handleDrop);
-            row.addEventListener('dragend', handleDragEnd);
-            row.addEventListener('touchstart', handleTouchStart);
-            row.addEventListener('touchmove', handleTouchMove);
-            row.addEventListener('touchend', handleTouchEnd);
+        tbody.appendChild(row);
 
-            const day = getCurrentDay();
-            const actorChips = (item.actorIds || []).map(actorId => {
-                const actor = day.actors.find(a => a.id === actorId);
-                if (!actor) return '';
-                const actorIndex = day.actors.findIndex(a => a.id === actorId);
-                const color = getActorColor(actorIndex);
-                return `<div class="scene-actor-chip" data-actor-id="${actorId}" style="background-color: ${color};">
-                    <span>${actor.name}</span>
-                    <span class="remove">×</span>
-                </div>`;
-            }).join('');
-
-            row.innerHTML = `
-                <td class="drag-handle">⋮⋮</td>
-                <td>${sceneNumber}</td>
-                <td><textarea>${item.title}</textarea></td>
-                <td data-scene-index="${index}"><div class="actor-drop-zone">${actorChips}</div></td>
-                <td><textarea>${item.location}</textarea></td>
-                <td><input type="number" class="duration small-input" value="${item.duration}" min="1" onchange="calculateTimes()"></td>
-                <td><input type="number" class="break-after small-input" value="${item.breakAfter}" min="0" onchange="calculateTimes()"></td>
-                <td class="time-cell"><input type="time" class="start-time" value="${item.startTime}" ${sceneNumber > 1 ? 'readonly style="background: #e8f5e9;"' : ''} ${sceneNumber === 1 ? 'onchange="calculateTimes()"' : ''}></td>
-                <td class="time-cell end-time">--:--</td>
-                <td><textarea>${item.style}</textarea></td>
-                <td><textarea>${item.accessories}</textarea></td>
-                <td><textarea>${item.equipment}</textarea></td>
-                <td><textarea>${item.notes}</textarea></td>
-                <td>
-                    <button class="skip-btn ${item.skipped ? 'active' : ''}" onclick="toggleSkip(${index})" title="${item.skipped ? 'Unskip scene' : 'Skip scene'}">${item.skipped ? 'UNSKIP' : 'SKIP'}</button>
-                    <button class="delete-btn" onclick="deleteRow(${index}, event)">DEL</button>
-                </td>
-            `;
-
-            // Add drop listeners to actor cell
-            const actorCell = row.querySelector('.actor-drop-zone');
-
-            // Add remove listeners to scene actor chips
-            actorCell.querySelectorAll('.scene-actor-chip .remove').forEach(removeBtn => {
-                removeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const chip = removeBtn.closest('.scene-actor-chip');
-                    const actorId = chip.dataset.actorId;
-                    const sceneIndex = parseInt(actorCell.parentElement.dataset.sceneIndex);
-                    const scenes = getActiveScenes();
-                    if (scenes[sceneIndex].actorIds) {
-                        scenes[sceneIndex].actorIds = scenes[sceneIndex].actorIds.filter(id => id !== actorId);
-                        renderTable();
-                        autoSave();
-                    }
-                });
-            });
-
-            // Click/tap to add selected actor
-            actorCell.addEventListener('click', (e) => {
-                // Don't add if clicking on a chip or remove button
-                if (e.target.closest('.scene-actor-chip')) return;
-
-                if (selectedActorId) {
-                    const sceneIndex = parseInt(actorCell.parentElement.dataset.sceneIndex);
-                    const scenes = getActiveScenes();
-                    if (!scenes[sceneIndex].actorIds) scenes[sceneIndex].actorIds = [];
-                    if (!scenes[sceneIndex].actorIds.includes(selectedActorId)) {
-                        scenes[sceneIndex].actorIds.push(selectedActorId);
-                        selectedActorId = null;
-                        renderTable();
-                        renderActors();
-                        autoSave();
-                    }
-                }
-            });
-
-            // Desktop drag and drop
-            actorCell.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                actorCell.style.background = '#e3f2fd';
-            });
-            actorCell.addEventListener('dragleave', () => {
-                actorCell.style.background = '';
-            });
-            actorCell.addEventListener('drop', (e) => {
-                e.preventDefault();
-                actorCell.style.background = '';
-                const actorId = e.dataTransfer.getData('actorId');
-                if (actorId) {
-                    const sceneIndex = parseInt(actorCell.parentElement.dataset.sceneIndex);
-                    const scenes = getActiveScenes();
-                    if (!scenes[sceneIndex].actorIds) scenes[sceneIndex].actorIds = [];
-                    if (!scenes[sceneIndex].actorIds.includes(actorId)) {
-                        scenes[sceneIndex].actorIds.push(actorId);
-                        renderTable();
-                        autoSave();
-                    }
-                }
-            });
-
-            tbody.appendChild(row);
+        // Only increment scene number for regular scenes
+        if (item.type !== 'actor-break') {
             sceneNumber++;
         }
     });
 
     calculateTimes();
-
-    // Add input event listeners for auto-save on field changes
     attachInputListeners();
 }
 
@@ -1412,7 +1404,6 @@ function addRow() {
         actorIds: [],
         style: "",
         accessories: "",
-        equipment: "",
         notes: "",
         skipped: false,
         optional: false
@@ -1514,7 +1505,7 @@ document.addEventListener('click', function(e) {
 });
 
 function exportToCSV() {
-    let csv = 'Scene,Title,Location,Duration,Break After,Start Time,End Time,Actors,Style,Accessories,Equipment,Notes\n';
+    let csv = 'Scene,Title,Location,Duration,Break After,Start Time,End Time,Actors,Style,Accessories,Notes\n';
 
     const rows = document.querySelectorAll('#scheduleBody tr:not(.break-row)');
     rows.forEach(row => {
@@ -1849,3 +1840,18 @@ function updateClock() {
 // Update clock immediately and then every 100ms for smooth blinking
 updateClock();
 setInterval(updateClock, 100);
+
+// Print function
+function printSchedule() {
+    // Save current data before printing
+    saveCurrentData();
+
+    // Set print-friendly title (strip emojis)
+    const h1 = document.querySelector('h1');
+    const originalTitle = h1.textContent;
+    const printTitle = originalTitle.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim() || 'Shooting Schedule';
+    h1.setAttribute('data-print-title', printTitle);
+
+    // Trigger browser print dialog
+    window.print();
+}

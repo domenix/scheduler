@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
     <div class="container">
         <div id="syncStatus" class="sync-status"></div>
@@ -22,12 +24,15 @@
             <div class="controls">
                 <button class="btn-primary" onclick="addRow()">+ Add Scene</button>
                 <button class="btn-primary" onclick="addMakeup()">+ Add Makeup</button>
-                <button id="deleteDayBtn" class="btn-danger delete-day-btn" onclick="deleteDay(event)" style="display: none;">Delete Day</button>
+                <button class="btn-primary" onclick="printSchedule()">🖨️ Print</button>
+                <button id="deleteDayBtn" class="btn-danger delete-day-btn" onclick="deleteDay(event)"
+                    style="display: none;">Delete Day</button>
                 <div class="clock-controls">
                     <button class="clock-btn btn-success" onclick="startNow(event)">▶</button>
                     <button class="clock-btn btn-danger reset-btn" onclick="resetTime(event)">↺</button>
                     <div class="live-clock" id="liveClock">
-                        <span class="hours">00</span><span class="separator">:</span><span class="minutes">00</span><span class="separator">:</span><span class="seconds">00</span>
+                        <span class="hours">00</span><span class="separator">:</span><span
+                            class="minutes">00</span><span class="separator">:</span><span class="seconds">00</span>
                     </div>
                 </div>
             </div>
@@ -61,7 +66,6 @@
                         <th style="width: 70px;">End</th>
                         <th style="width: 250px;">Style</th>
                         <th style="width: 250px;">Accessories</th>
-                        <th style="width: 250px;">Equipment</th>
                         <th style="width: 150px;">Notes</th>
                         <th style="width: 40px;"></th>
                     </tr>
@@ -73,16 +77,28 @@
 
         <div class="stats-section">
             <div class="stat-item">
-                <span class="stat-label">Total Scene Time:</span>
+                <span class="stat-label">Total scenes:</span>
                 <span id="totalSceneTime" class="stat-value">0h 0m</span>
             </div>
             <div class="stat-item">
-                <span class="stat-label">Total Break Time:</span>
+                <span class="stat-label">Total breaks:</span>
                 <span id="totalBreakTime" class="stat-value">0h 0m</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Total shoot:</span>
+                <span id="totalShootTime" class="stat-value">0h 0m</span>
+            </div>
+        </div>
+
+        <div class="stats-section" id="actorPairsSection" style="display: none;">
+            <div class="stat-item-full">
+                <span class="stat-label">Scenes together:</span>
+                <span id="actorPairs" class="stat-value-pairs"></span>
             </div>
         </div>
     </div>
 
     <script src="script.js"></script>
 </body>
+
 </html>
