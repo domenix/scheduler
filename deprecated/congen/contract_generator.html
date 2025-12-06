@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Contract Generator</title>
+    <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip.js"></script>
+    <script src="https://unpkg.com/docxtemplater@3.42.3/build/docxtemplater.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        input,
+        textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .section h2 {
+            margin-bottom: 15px;
+            color: #2196f3;
+            font-size: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+
+        input,
+        textarea {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2196f3;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .fantasy-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .fantasy-grid input {
+            padding: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 14px 28px;
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            touch-action: manipulation;
+        }
+
+        button:hover {
+            background: #1976d2;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button.secondary {
+            background: #4caf50;
+        }
+
+        button.secondary:hover {
+            background: #388e3c;
+        }
+
+        button.warning {
+            background: #ff9800;
+        }
+
+        button.warning:hover {
+            background: #f57c00;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .file-upload {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .file-upload h3 {
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        .upload-item {
+            margin: 10px 0;
+        }
+
+        .upload-item label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .file-status {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .file-status.loaded {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .fantasy-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📄 Model Contract Generator</h1>
+
+        <div class="file-upload">
+            <h3>Step 1: Load Template Documents (One-time setup)</h3>
+            <p style="margin-bottom: 10px; font-size: 14px;">Upload your 3 Word document templates once. They'll be
+                saved in your browser.</p>
+
+            <div class="upload-item">
+                <label>2257 Form (.docx):</label>
+                <input type="file" id="form2257File" accept=".docx">
+                <span class="file-status" id="form2257Status"></span>
+            </div>
+
+            <div class="upload-item">
+                <label>Exclusive Model Release (.docx):</label>
+                <input type="file" id="exclusiveFile" accept=".docx">
+                <span class="file-status" id="exclusiveStatus"></span>
+            </div>
+
+
+            <div class="upload-item">
+                <label>Model Release without pictures (.docx):</label>
+                <input type="file" id="modelReleaseFile" accept=".docx">
+                <span class="file-status" id="modelReleaseStatus"></span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Shoot Information</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Shoot ID (5 digits):</label>
+                    <input type="text" id="shootId" placeholder="00001" maxlength="5">
+                </div>
+                <div class="form-group">
+                    <label>Shoot Date (YYYY-MM-DD):</label>
+                    <input type="date" id="shootDate">
+                </div>
+                <div class="form-group">
+                    <label>Content Name:</label>
+                    <input type="text" id="contentName" value="Girl's feet">
+                </div>
+                <div class="form-group">
+                    <label>Location (City):</label>
+                    <input type="text" id="shootPlaceShort" value="Budapest">
+                </div>
+                <div class="form-group full-width">
+                    <label>Full Address:</label>
+                    <input type="text" id="shootPlaceLong" value="Budapest">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Model Information</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Legal Name:</label>
+                    <input type="text" id="participantName" placeholder="Model's full legal name">
+                </div>
+                <div class="form-group">
+                    <label>Place of Birth:</label>
+                    <input type="text" id="participantPob" placeholder="City, Country">
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth (YYYY-MM-DD):</label>
+                    <input type="date" id="participantDob">
+                </div>
+                <div class="form-group full-width">
+                    <label>Home Address:</label>
+                    <textarea id="participantAddr" placeholder="Full address"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>ID Type:</label>
+                    <input type="text" id="participantIdType" value="National ID">
+                </div>
+                <div class="form-group">
+                    <label>ID Number:</label>
+                    <input type="text" id="participantIdNumber">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Fantasy Names (for 2257 form)</h2>
+            <div class="fantasy-grid">
+                <input type="text" id="fantasyName1" placeholder="Fantasy name 1">
+                <input type="text" id="fantasyName2" placeholder="Fantasy name 2">
+                <input type="text" id="fantasyName3" placeholder="Fantasy name 3">
+                <input type="text" id="fantasyName4" placeholder="Fantasy name 4">
+                <input type="text" id="fantasyName5" placeholder="Fantasy name 5">
+                <input type="text" id="fantasyName6" placeholder="Fantasy name 6">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Owner Information</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Owner Name:</label>
+                    <input type="text" id="ownerName" value="David">
+                </div>
+                <div class="form-group">
+                    <label>Owner Date of Birth (YYYY-MM-DD):</label>
+                    <input type="date" id="ownerDob">
+                </div>
+                <div class="form-group">
+                    <label>Owner Place of Birth:</label>
+                    <input type="text" id="ownerPob">
+                </div>
+                <div class="form-group full-width">
+                    <label>Owner Address:</label>
+                    <textarea id="ownerAddr"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Owner ID Number:</label>
+                    <input type="text" id="ownerIdNumber">
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button onclick="saveFormData()" class="secondary">💾 Save Form Data</button>
+            <button onclick="loadFormData()" class="secondary">📂 Load Saved Data</button>
+            <button onclick="clearAll()" class="warning">🗑️ Clear All</button>
+            <button onclick="generateContracts()">📥 Generate All 3 Contracts</button>
+        </div>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        // Auto-set today's date
+        document.getElementById('shootDate').valueAsDate = new Date();
+
+        // Template storage in browser
+        const STORAGE_PREFIX = 'modelContract_';
+
+        // --- NEW DATE FORMATTER ---
+        function formatDate(dateStr) {
+            if (!dateStr) return "";
+            const [y, m, d] = dateStr.split("-");
+            return `${y}. ${m}. ${d}.`;
+        }
+
+        // Load templates from localStorage on page load
+        window.addEventListener('load', checkStoredTemplates);
+
+        function checkStoredTemplates() {
+            const templates = ['exclusive', 'form2257', 'modelRelease'];
+            templates.forEach(name => {
+                const stored = localStorage.getItem(STORAGE_PREFIX + 'template_' + name);
+                if (stored) {
+                    document.getElementById(name + 'Status').textContent = '✓ Loaded from storage';
+                    document.getElementById(name + 'Status').classList.add('loaded');
+                }
+            });
+        }
+
+        // File upload handlers
+        document.getElementById('exclusiveFile').addEventListener('change', (e) => handleFileUpload(e, 'exclusive'));
+        document.getElementById('form2257File').addEventListener('change', (e) => handleFileUpload(e, 'form2257'));
+        document.getElementById('modelReleaseFile').addEventListener('change', (e) => handleFileUpload(e, 'modelRelease'));
+
+        async function handleFileUpload(event, templateName) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const base64 = arrayBufferToBase64(arrayBuffer);
+                localStorage.setItem(STORAGE_PREFIX + 'template_' + templateName, base64);
+
+                const statusEl = document.getElementById(templateName + 'Status');
+                statusEl.textContent = '✓ Loaded';
+                statusEl.classList.add('loaded');
+
+                showStatus('Template saved successfully', 'success');
+            } catch (error) {
+                showStatus('Error saving template: ' + error.message, 'error');
+            }
+        }
+
+        function arrayBufferToBase64(buffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // --- PATCHED: date fields now formatted ---
+        function getFormData() {
+            return {
+                SHOOT_ID: document.getElementById('shootId').value || '',
+                SHOOT_DATE: formatDate(document.getElementById('shootDate').value),
+                CONTENT_NAME: document.getElementById('contentName').value || '',
+                PARTICIPANT_NAME: document.getElementById('participantName').value || '',
+                PARTICIPANT_POB: document.getElementById('participantPob').value || '',
+                PARTICIPANT_DOB: formatDate(document.getElementById('participantDob').value),
+                PARTICIPANT_ADDR: document.getElementById('participantAddr').value || '',
+                PARTICIPANT_ID_TYPE: document.getElementById('participantIdType').value || '',
+                PARTICIPANT_ID_NUMBER: document.getElementById('participantIdNumber').value || '',
+                FANTASY_NAME_1: document.getElementById('fantasyName1').value || '',
+                FANTASY_NAME_2: document.getElementById('fantasyName2').value || '',
+                FANTASY_NAME_3: document.getElementById('fantasyName3').value || '',
+                FANTASY_NAME_4: document.getElementById('fantasyName4').value || '',
+                FANTASY_NAME_5: document.getElementById('fantasyName5').value || '',
+                FANTASY_NAME_6: document.getElementById('fantasyName6').value || '',
+                OWNER_NAME: document.getElementById('ownerName').value || '',
+                OWNER_DOB: formatDate(document.getElementById('ownerDob').value),
+                OWNER_POB: document.getElementById('ownerPob').value || '',
+                OWNER_ADDR: document.getElementById('ownerAddr').value || '',
+                OWNER_ID_NUMBER: document.getElementById('ownerIdNumber').value || '',
+                SHOOT_PLACE_SHORT: document.getElementById('shootPlaceShort').value || '',
+                SHOOT_PLACE_LONG: document.getElementById('shootPlaceLong').value || ''
+            };
+        }
+
+        function setFormData(data) {
+            document.getElementById('shootId').value = data.SHOOT_ID || '';
+            document.getElementById('shootDate').value = data.SHOOT_DATE || '';
+            document.getElementById('contentName').value = data.CONTENT_NAME || '';
+            document.getElementById('participantName').value = data.PARTICIPANT_NAME || '';
+            document.getElementById('participantPob').value = data.PARTICIPANT_POB || '';
+            document.getElementById('participantDob').value = data.PARTICIPANT_DOB || '';
+            document.getElementById('participantAddr').value = data.PARTICIPANT_ADDR || '';
+            document.getElementById('participantIdType').value = data.PARTICIPANT_ID_TYPE || '';
+            document.getElementById('participantIdNumber').value = data.PARTICIPANT_ID_NUMBER || '';
+            document.getElementById('fantasyName1').value = data.FANTASY_NAME_1 || '';
+            document.getElementById('fantasyName2').value = data.FANTASY_NAME_2 || '';
+            document.getElementById('fantasyName3').value = data.FANTASY_NAME_3 || '';
+            document.getElementById('fantasyName4').value = data.FANTASY_NAME_4 || '';
+            document.getElementById('fantasyName5').value = data.FANTASY_NAME_5 || '';
+            document.getElementById('fantasyName6').value = data.FANTASY_NAME_6 || '';
+            document.getElementById('ownerName').value = data.OWNER_NAME || '';
+            document.getElementById('ownerDob').value = data.OWNER_DOB || '';
+            document.getElementById('ownerPob').value = data.OWNER_POB || '';
+            document.getElementById('ownerAddr').value = data.OWNER_ADDR || '';
+            document.getElementById('ownerIdNumber').value = data.OWNER_ID_NUMBER || '';
+            document.getElementById('shootPlaceShort').value = data.SHOOT_PLACE_SHORT || '';
+            document.getElementById('shootPlaceLong').value = data.SHOOT_PLACE_LONG || '';
+        }
+
+        function saveFormData() {
+            const data = getFormData();
+            localStorage.setItem(STORAGE_PREFIX + 'formData', JSON.stringify(data));
+            showStatus('Form data saved to browser', 'success');
+        }
+
+        function loadFormData() {
+            const saved = localStorage.getItem(STORAGE_PREFIX + 'formData');
+            if (saved) {
+                setFormData(JSON.parse(saved));
+                showStatus('Form data loaded', 'success');
+            } else {
+                showStatus('No saved data found', 'error');
+            }
+        }
+
+        function clearAll() {
+            if (confirm('Clear all form data? (Templates will remain saved)')) {
+                document.querySelectorAll('input:not([type="file"]), textarea').forEach(el => {
+                    if (el.id !== 'contentName' && el.id !== 'participantIdType' &&
+                        el.id !== 'ownerName' && el.id !== 'shootPlaceShort' && el.id !== 'shootPlaceLong') {
+                        el.value = '';
+                    }
+                });
+                document.getElementById('shootDate').valueAsDate = new Date();
+                showStatus('Form cleared', 'info');
+            }
+        }
+
+        async function generateContracts() {
+            const data = getFormData();
+
+            if (!data.PARTICIPANT_NAME || !data.SHOOT_ID || !data.SHOOT_DATE) {
+                showStatus('Please fill: Model Name, Shoot ID, and Shoot Date', 'error');
+                return;
+            }
+
+            const templates = {
+                exclusive: localStorage.getItem(STORAGE_PREFIX + 'template_exclusive'),
+                form2257: localStorage.getItem(STORAGE_PREFIX + 'template_form2257'),
+                modelRelease: localStorage.getItem(STORAGE_PREFIX + 'template_modelRelease')
+            };
+
+            if (!templates.exclusive || !templates.form2257 || !templates.modelRelease) {
+                showStatus('Please upload all 3 template documents first', 'error');
+                return;
+            }
+
+            showStatus('Generating contracts...', 'info');
+
+            try {
+                await generateContract(templates.exclusive, data, `Exclusive_Model_Release_${data.SHOOT_ID}.docx`);
+                await generateContract(templates.form2257, data, `2257_Form_${data.SHOOT_ID}.docx`);
+                await generateContract(templates.modelRelease, data, `Model_Release_${data.SHOOT_ID}.docx`);
+
+                showStatus('✓ All 3 contracts generated successfully!', 'success');
+            } catch (error) {
+                showStatus('Error: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+
+        async function generateContract(templateBase64, data, filename) {
+            const content = base64ToArrayBuffer(templateBase64);
+            const zip = new PizZip(content);
+
+            const doc = new window.docxtemplater(zip, {
+                paragraphLoop: true,
+                linebreaks: true,
+            });
+
+            doc.render(data);
+
+            const output = doc.getZip().generate({
+                type: 'blob',
+                mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            });
+
+            saveAs(output, filename);
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + type;
+            status.style.display = 'block';
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    status.style.display = 'none';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+
+</html>

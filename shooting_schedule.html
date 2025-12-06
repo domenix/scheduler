@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shooting Schedule Template</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="container">
+        <div id="syncStatus" class="sync-status"></div>
+
+        <h1 contenteditable="true">📹 Shooting Schedule Template</h1>
+
+        <div class="day-tabs">
+            <div id="dayTabsContainer"></div>
+            <button class="add-day-btn" onclick="addNewDay()">+</button>
+        </div>
+
+        <div class="controls-actors-container">
+            <div class="controls">
+                <button class="btn-primary" onclick="addRow()">+ Add Scene</button>
+                <button class="btn-primary" onclick="addMakeup()">+ Add Makeup</button>
+                <button id="deleteDayBtn" class="btn-danger delete-day-btn" onclick="deleteDay(event)" style="display: none;">Delete Day</button>
+                <div class="clock-controls">
+                    <button class="clock-btn btn-success" onclick="startNow(event)">▶</button>
+                    <button class="clock-btn btn-danger reset-btn" onclick="resetTime(event)">↺</button>
+                    <div class="live-clock" id="liveClock">
+                        <span class="hours">00</span><span class="separator">:</span><span class="minutes">00</span><span class="separator">:</span><span class="seconds">00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actors-section">
+                <div id="actorsList">
+                    <div class="actor-chip add-actor-chip">
+                        <input type="text" id="newActorInput" placeholder="Add actor...">
+                        <span class="add-btn" onclick="addActor()">+</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="scheduleTable">
+                <thead>
+                    <tr>
+                        <th style="width: 30px;">⋮⋮</th>
+                        <th style="width: 40px;">S</th>
+                        <th style="width: 200px;">Title</th>
+                        <th style="width: 120px;">Location</th>
+                        <th style="width: 60px;">D</th>
+                        <th style="width: 60px;">B</th>
+                        <th style="width: 80px;">Start<br>Time</th>
+                        <th style="width: 80px;">End<br>Time</th>
+                        <th style="width: 150px;">Actors</th>
+                        <th style="width: 250px;">Style</th>
+                        <th style="width: 250px;">Accessories</th>
+                        <th style="width: 250px;">Equipment</th>
+                        <th style="width: 200px;">Notes</th>
+                        <th style="width: 40px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="scheduleBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
