@@ -11,6 +11,71 @@ function initSupabase() {
     }
 }
 
+function exportToCSV() {
+    const day = getCurrentDay();
+    if (!day) return;
+
+    // CSV header
+    let csv = 'Scene,Title,Actors,Location,Duration,Break After,Start Time,End Time,Style,Accessories,Notes,Skipped,Optional\n';
+
+    const scenes = getActiveScenes();
+    let sceneNumber = 1;
+
+    scenes.forEach(item => {
+        if (item.type === 'actor-break') {
+            // Skip makeup/actor breaks in export
+            return;
+        }
+
+        // Get actor names
+        const actorNames = (item.actorIds || []).map(actorId => {
+            const actor = day.actors.find(a => a.id === actorId);
+            return actor ? actor.name : '';
+        }).filter(Boolean).join('; ');
+
+        // Escape and quote fields
+        const escape = (str) => `"${String(str || '').replace(/"/g, '""')}"`;
+
+        const row = [
+            sceneNumber,
+            escape(item.title),
+            escape(actorNames),
+            escape(item.location),
+            item.duration || 0,
+            item.breakAfter || 0,
+            escape(item.startTime),
+            escape(calculateEndTime(item)),
+            escape(item.style),
+            escape(item.accessories),
+            escape(item.notes),
+            item.skipped ? 'Yes' : 'No',
+            item.optional ? 'Yes' : 'No'
+        ];
+
+        csv += row.join(',') + '\n';
+        sceneNumber++;
+    });
+
+    // Create and download file
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${day.name.replace(/\s+/g, '_')}_schedule.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+
+// Helper to calculate end time for a scene
+function calculateEndTime(scene) {
+    if (!scene.startTime) return '';
+    const start = timeToMinutes(scene.startTime);
+    const end = start + (scene.duration || 0);
+    return minutesToTime(end);
+}
+
 // Sync status indicator
 function updateSyncStatus(status) {
     if (!syncStatusElement) {
