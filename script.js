@@ -54,69 +54,90 @@ function loadFromLocalStorage() {
 
 // Manual save - saves to localStorage and syncs to database if online
 async function manualSave(event) {
-    const saveBtn = event.currentTarget;
+    event.preventDefault();
+    event.stopPropagation();
+
+    const saveBtn = event.currentTarget || event.target;
     const originalText = saveBtn.innerHTML;
 
-    saveCurrentData();
-    saveToLocalStorage();
+    try {
+        saveCurrentData();
+        saveToLocalStorage();
 
-    if (navigator.onLine && supabase) {
-        saveBtn.innerHTML = '⏳ Saving...';
-        const success = await saveToSupabase();
-        if (success) {
-            saveBtn.innerHTML = '✓ Saved';
-            saveBtn.style.backgroundColor = '#4caf50';
+        if (navigator.onLine && supabase) {
+            saveBtn.innerHTML = '⏳ Saving...';
+            saveBtn.disabled = true;
+            const success = await saveToSupabase();
+            if (success) {
+                saveBtn.innerHTML = '✓ Saved';
+                saveBtn.style.backgroundColor = '#4caf50';
+            } else {
+                saveBtn.innerHTML = '⚠ Local only';
+                saveBtn.style.backgroundColor = '#ff9800';
+            }
         } else {
-            saveBtn.innerHTML = '⚠ Local only';
-            saveBtn.style.backgroundColor = '#ff9800';
+            saveBtn.innerHTML = '✓ Saved locally';
+            saveBtn.style.backgroundColor = '#4caf50';
+            updateSyncStatus('offline');
         }
-    } else {
-        saveBtn.innerHTML = '✓ Saved locally';
-        saveBtn.style.backgroundColor = '#4caf50';
-        updateSyncStatus('offline');
+    } catch (error) {
+        console.error('Save error:', error);
+        saveBtn.innerHTML = '✗ Error';
+        saveBtn.style.backgroundColor = '#f44336';
     }
 
     // Reset button after 2 seconds
     setTimeout(() => {
         saveBtn.innerHTML = originalText;
         saveBtn.style.backgroundColor = '';
+        saveBtn.disabled = false;
     }, 2000);
 }
 
 // Manual load - loads from localStorage and overwrites database if online
 async function manualLoad(event) {
-    const loadBtn = event.currentTarget;
+    event.preventDefault();
+    event.stopPropagation();
+
+    const loadBtn = event.currentTarget || event.target;
     const originalText = loadBtn.innerHTML;
 
-    const loaded = loadFromLocalStorage();
-    if (loaded) {
-        loadBtn.innerHTML = '⏳ Loading...';
+    try {
+        const loaded = loadFromLocalStorage();
+        if (loaded) {
+            loadBtn.innerHTML = '⏳ Loading...';
+            loadBtn.disabled = true;
 
-        // Refresh UI with loaded data
-        renderDayTabs();
-        renderActors();
-        renderTable();
-        updateTitle();
-        updateDeleteDayButton();
-        updateDayNotes();
+            // Refresh UI with loaded data
+            renderDayTabs();
+            renderActors();
+            renderTable();
+            updateTitle();
+            updateDeleteDayButton();
+            updateDayNotes();
 
-        // If online, overwrite database with the loaded local data
-        if (navigator.onLine && supabase) {
-            const success = await saveToSupabase();
-            if (success) {
+            // If online, overwrite database with the loaded local data
+            if (navigator.onLine && supabase) {
+                const success = await saveToSupabase();
+                if (success) {
+                    loadBtn.innerHTML = '✓ Loaded';
+                    loadBtn.style.backgroundColor = '#4caf50';
+                } else {
+                    loadBtn.innerHTML = '✓ Loaded (no sync)';
+                    loadBtn.style.backgroundColor = '#ff9800';
+                }
+            } else {
                 loadBtn.innerHTML = '✓ Loaded';
                 loadBtn.style.backgroundColor = '#4caf50';
-            } else {
-                loadBtn.innerHTML = '✓ Loaded (no sync)';
-                loadBtn.style.backgroundColor = '#ff9800';
+                updateSyncStatus('offline');
             }
         } else {
-            loadBtn.innerHTML = '✓ Loaded';
-            loadBtn.style.backgroundColor = '#4caf50';
-            updateSyncStatus('offline');
+            loadBtn.innerHTML = '✗ No data';
+            loadBtn.style.backgroundColor = '#f44336';
         }
-    } else {
-        loadBtn.innerHTML = '✗ No data';
+    } catch (error) {
+        console.error('Load error:', error);
+        loadBtn.innerHTML = '✗ Error';
         loadBtn.style.backgroundColor = '#f44336';
     }
 
@@ -124,6 +145,7 @@ async function manualLoad(event) {
     setTimeout(() => {
         loadBtn.innerHTML = originalText;
         loadBtn.style.backgroundColor = '';
+        loadBtn.disabled = false;
     }, 2000);
 }
 
@@ -418,6 +440,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Add touch-friendly event listeners for save/load buttons
+    // This ensures they work on mobile devices
+    const saveButtons = document.querySelectorAll('button[onclick*="manualSave"]');
+    const loadButtons = document.querySelectorAll('button[onclick*="manualLoad"]');
+
+    saveButtons.forEach(btn => {
+        btn.addEventListener('click', manualSave);
+        btn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            manualSave(e);
+        });
+    });
+
+    loadButtons.forEach(btn => {
+        btn.addEventListener('click', manualLoad);
+        btn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            manualLoad(e);
+        });
+    });
 });
 
 // Helper to get current day scenes (for backward compatibility)
