@@ -937,12 +937,13 @@ function performSanityChecks() {
                 if (existingWarning) {
                     existingWarning.remove();
                 }
-
-                if (sceneCount < 16) {
+                
+                const idealSceneCount = 12
+                if (sceneCount < idealSceneCount) {
                     const warningSpan = document.createElement('span');
                     warningSpan.className = 'actor-warning';
                     warningSpan.innerHTML = '⚠️';
-                    warningSpan.title = `Actor is scheduled in less than 16 scenes (currently ${sceneCount})`;
+                    warningSpan.title = `Actor is scheduled in less than ${idealSceneCount} scenes (currently ${sceneCount})`;
                     warningSpan.style.color = '#f39c12';
                     warningSpan.style.marginLeft = '4px';
                     actorChip.querySelector('span').appendChild(warningSpan);
