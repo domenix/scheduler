@@ -1299,9 +1299,25 @@ function saveCurrentData() {
     autoSave();
 }
 
-function toggleSkip(index) {
+function toggleSceneState(index) {
     const scenes = getActiveScenes();
-    scenes[index].skipped = !scenes[index].skipped;
+    const scene = scenes[index];
+    
+    // Cycle: normal -> skip -> optional -> normal
+    if (!scene.skipped && !scene.optional) {
+        // Normal -> Skip
+        scene.skipped = true;
+        scene.optional = false;
+    } else if (scene.skipped) {
+        // Skip -> Optional
+        scene.skipped = false;
+        scene.optional = true;
+    } else if (scene.optional) {
+        // Optional -> Normal
+        scene.skipped = false;
+        scene.optional = false;
+    }
+    
     renderTable();
     autoSave();
 }
@@ -1472,13 +1488,21 @@ function renderCell(item, index, sceneNumber, columnKey, isActorBreak) {
             if (isActorBreak) {
                 return `<td><button class="delete-btn" onclick="deleteRow(${index}, event)">DEL</button></td>`;
             }
+            
+            // Determine button state
+            let stateBtn = '';
+            if (item.skipped) {
+                stateBtn = `<button class="skip-btn active" onclick="toggleSceneState(${index})" title="Currently skipped - click to mark optional" style="background: var(--color-danger);">SKIP</button>`;
+            } else if (item.optional) {
+                stateBtn = `<button class="skip-btn active" onclick="toggleSceneState(${index})" title="Currently optional - click to mark normal" style="background: var(--color-warning);">OPT</button>`;
+            } else {
+                stateBtn = `<button class="skip-btn" onclick="toggleSceneState(${index})" title="Currently normal - click to skip" style="background: var(--neutral-500);">NORM</button>`;
+            }
+            
             return `<td>
-                <button class="skip-btn ${item.skipped ? 'active' : ''}" onclick="toggleSkip(${index})" title="${item.skipped ? 'Unskip scene' : 'Skip scene'}">${item.skipped ? 'UNSKIP' : 'SKIP'}</button>
+                ${stateBtn}
                 <button class="delete-btn" onclick="deleteRow(${index}, event)">DEL</button>
             </td>`;
-        
-        default:
-            return `<td></td>`;
     }
 }
 
