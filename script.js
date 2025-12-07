@@ -54,10 +54,17 @@ function loadFromLocalStorage() {
 
 // Manual save - saves to localStorage and syncs to database if online
 async function manualSave(event) {
-    event.preventDefault();
-    event.stopPropagation();
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
 
-    const saveBtn = event.currentTarget || event.target;
+    const saveBtn = event ? (event.currentTarget || event.target) : document.getElementById('saveBtn');
+    if (!saveBtn) {
+        console.error('Save button not found');
+        return;
+    }
+
     const originalText = saveBtn.innerHTML;
 
     try {
@@ -96,10 +103,17 @@ async function manualSave(event) {
 
 // Manual load - loads from localStorage and overwrites database if online
 async function manualLoad(event) {
-    event.preventDefault();
-    event.stopPropagation();
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
 
-    const loadBtn = event.currentTarget || event.target;
+    const loadBtn = event ? (event.currentTarget || event.target) : document.getElementById('loadBtn');
+    if (!loadBtn) {
+        console.error('Load button not found');
+        return;
+    }
+
     const originalText = loadBtn.innerHTML;
 
     try {
@@ -443,24 +457,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add touch-friendly event listeners for save/load buttons
     // This ensures they work on mobile devices
-    const saveButtons = document.querySelectorAll('button[onclick*="manualSave"]');
-    const loadButtons = document.querySelectorAll('button[onclick*="manualLoad"]');
+    const saveBtn = document.getElementById('saveBtn');
+    const loadBtn = document.getElementById('loadBtn');
 
-    saveButtons.forEach(btn => {
-        btn.addEventListener('click', manualSave);
-        btn.addEventListener('touchend', (e) => {
+    if (saveBtn) {
+        saveBtn.addEventListener('click', manualSave, false);
+        saveBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             manualSave(e);
-        });
-    });
+        }, false);
+    }
 
-    loadButtons.forEach(btn => {
-        btn.addEventListener('click', manualLoad);
-        btn.addEventListener('touchend', (e) => {
+    if (loadBtn) {
+        loadBtn.addEventListener('click', manualLoad, false);
+        loadBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             manualLoad(e);
-        });
-    });
+        }, false);
+    }
 });
 
 // Helper to get current day scenes (for backward compatibility)
