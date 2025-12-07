@@ -1070,7 +1070,9 @@ function calculateTimes() {
         if (index === 0 || currentTime === null) {
             currentTime = timeToMinutes(startInput.value);
         } else {
-            startInput.value = minutesToTime(currentTime);
+            const newStartTime = minutesToTime(currentTime);
+            startInput.value = newStartTime;
+            item.startTime = newStartTime;
         }
 
         // Use 0 for duration and break if scene is skipped, otherwise use actual values
