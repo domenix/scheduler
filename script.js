@@ -752,8 +752,8 @@ function performSanityChecks() {
         const duration = item.skipped ? 0 : (parseInt(durationInput.value) || 0);
         const breakDuration = item.skipped ? 0 : (parseInt(breakInput.value) || 0);
 
-        // Check if adding this scene would exceed 120 minutes without a 30-min break
-        if (!item.skipped && recordedMinutesSinceLastCopy + duration > 120) {
+        // Check if adding this scene would exceed 125 minutes without a 30-min break
+        if (!item.skipped && recordedMinutesSinceLastCopy + duration > 125) {
             row.classList.add('copy-warning');
             const titleCell = row.querySelector('td:nth-child(3)');
             const warningSpan = document.createElement('span');
@@ -776,10 +776,10 @@ function performSanityChecks() {
     // Check 2: Actor scene count warning (< 16 scenes)
     if (day && day.actors) {
         day.actors.forEach(actor => {
-            // Count how many scenes this actor appears in
+            // Count how many scenes this actor appears in (excluding actor-breaks)
             let sceneCount = 0;
             scenes.forEach(scene => {
-                if (scene.actorIds && scene.actorIds.includes(actor.id) && !scene.skipped) {
+                if (scene.type !== 'actor-break' && scene.actorIds && scene.actorIds.includes(actor.id) && !scene.skipped) {
                     sceneCount++;
                 }
             });
@@ -1063,6 +1063,37 @@ function updateStats() {
             actorPairsSectionEl.style.display = 'none';
         }
     }
+
+    // Update actor scene counts
+    const actorCountEl = document.getElementById('actorCounts');
+    const actorCountsSectionEl = document.getElementById('actorCountsSection');
+
+    if (actorCountEl && actorCountsSectionEl && day) {
+        const actorCounts = [];
+
+        // Count scenes and minutes for each actor
+        day.actors.forEach(actor => {
+            let count = 0;
+            let totalMinutes = 0;
+            scenes.forEach(scene => {
+                // Only count regular scenes, NOT actor-breaks/makeup
+                if (scene.type !== 'actor-break' && scene.actorIds && scene.actorIds.includes(actor.id) && !scene.skipped) {
+                    count++;
+                    totalMinutes += parseInt(scene.duration) || 0;
+                }
+            });
+            if (count > 0) {
+                actorCounts.push(`${actor.name} (${count} scenes, ${totalMinutes} min)`);
+            }
+        });
+
+        if (actorCounts.length > 0) {
+            actorCountEl.textContent = actorCounts.join(', ');
+            actorCountsSectionEl.style.display = '';
+        } else {
+            actorCountsSectionEl.style.display = 'none';
+        }
+    }
 }
 
 function saveCurrentData() {
@@ -1175,6 +1206,40 @@ function addMakeup() {
     autoSave();
 }
 
+// Column definitions for scene table - single source of truth
+const SCENE_COLUMNS = [
+    { key: 'drag', label: '⋮⋮', width: 'auto', class: 'drag-handle' },
+    { key: 'sceneNum', label: '#', width: 'auto' },
+    { key: 'title', label: 'Scene', width: 'auto' },
+    { key: 'actors', label: 'Actors', width: 'auto' },
+    { key: 'location', label: 'Location', width: 'auto' },
+    { key: 'duration', label: 'Duration (min)', width: 'auto' },
+    { key: 'breakAfter', label: 'Break After (min)', width: 'auto' },
+    { key: 'startTime', label: 'Start Time', width: 'auto' },
+    { key: 'endTime', label: 'End Time', width: 'auto' },
+    { key: 'style', label: 'Style', width: 'auto' },
+    { key: 'accessories', label: 'Accessories', width: 'auto' },
+    { key: 'notes', label: 'Notes', width: 'auto' },
+    { key: 'actions', label: 'Actions', width: 'auto' }
+];
+
+// Actor break columns (subset of scene columns)
+const ACTOR_BREAK_COLUMNS = [
+    { key: 'drag', label: '⋮⋮', width: 'auto', class: 'drag-handle' },
+    { key: 'sceneNum', label: '👤', width: 'auto' },
+    { key: 'title', label: 'Break', width: 'auto' },
+    { key: 'actors', label: 'Actors', width: 'auto' },
+    { key: 'location', label: '', width: 'auto' },
+    { key: 'duration', label: 'Duration (min)', width: 'auto' },
+    { key: 'breakAfter', label: '', width: 'auto' },
+    { key: 'startTime', label: 'Start Time', width: 'auto' },
+    { key: 'endTime', label: 'End Time', width: 'auto' },
+    { key: 'style', label: '', width: 'auto' },
+    { key: 'accessories', label: '', width: 'auto' },
+    { key: 'notes', label: '', width: 'auto' },
+    { key: 'actions', label: 'Actions', width: 'auto' }
+];
+
 // Helper function to build actor chips
 function buildActorChips(item, index) {
     const day = getCurrentDay();
@@ -1196,48 +1261,89 @@ function buildActorChips(item, index) {
     }).join('');
 }
 
-// Helper function to build row HTML
-function buildRowHTML(item, index, sceneNumber) {
+// Helper function to render a cell based on column key
+function renderCell(item, index, sceneNumber, columnKey, isActorBreak) {
     const actorChips = buildActorChips(item, index);
     const day = getCurrentDay();
     
-    if (item.type === 'actor-break') {
-        const endTime = item.startTime ? minutesToTime(timeToMinutes(item.startTime) + (item.duration || 15)) : '--:--';
-        return `
-            <td class="drag-handle">⋮⋮</td>
-            <td>👤</td>
-            <td><textarea>${item.title || 'Makeup'}</textarea></td>
-            <td data-scene-index="${index}"><div class="actor-drop-zone">${actorChips}</div></td>
-            <td></td>
-            <td><input type="number" class="duration small-input" value="${item.duration || 15}" min="1" onchange="calculateTimes()"></td>
-            <td></td>
-            <td class="time-cell"><input type="time" class="start-time" value="${item.startTime || ''}" onchange="calculateTimes()"></td>
-            <td class="time-cell end-time">${endTime}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><button class="delete-btn" onclick="deleteRow(${index}, event)">DEL</button></td>
-        `;
-    } else {
-        return `
-            <td class="drag-handle">⋮⋮</td>
-            <td>${sceneNumber}</td>
-            <td><textarea>${item.title}</textarea></td>
-            <td data-scene-index="${index}"><div class="actor-drop-zone">${actorChips}</div></td>
-            <td><textarea>${item.location}</textarea></td>
-            <td><input type="number" class="duration small-input" value="${item.duration}" min="1" onchange="calculateTimes()"></td>
-            <td><input type="number" class="break-after small-input" value="${item.breakAfter}" min="0" onchange="calculateTimes()"></td>
-            <td class="time-cell"><input type="time" class="start-time" value="${item.startTime}" ${sceneNumber > 1 ? 'readonly style="background: #e8f5e9;"' : ''} ${sceneNumber === 1 ? 'onchange="calculateTimes()"' : ''}></td>
-            <td class="time-cell end-time">--:--</td>
-            <td><textarea>${item.style}</textarea></td>
-            <td><textarea>${item.accessories}</textarea></td>
-            <td><textarea>${item.notes}</textarea></td>
-            <td>
+    switch(columnKey) {
+        case 'drag':
+            return `<td class="drag-handle">⋮⋮</td>`;
+        
+        case 'sceneNum':
+            if (isActorBreak) {
+                return `<td>👤</td>`;
+            }
+            return `<td>${sceneNumber}</td>`;
+        
+        case 'title':
+            if (isActorBreak) {
+                return `<td><textarea>${item.title || 'Makeup'}</textarea></td>`;
+            }
+            return `<td><textarea>${item.title}</textarea></td>`;
+        
+        case 'actors':
+            return `<td data-scene-index="${index}"><div class="actor-drop-zone">${actorChips}</div></td>`;
+        
+        case 'location':
+            if (isActorBreak) return `<td></td>`;
+            return `<td><textarea>${item.location}</textarea></td>`;
+        
+        case 'duration':
+            if (isActorBreak) {
+                return `<td><input type="number" class="duration small-input" value="${item.duration || 15}" min="1" onchange="calculateTimes()"></td>`;
+            }
+            return `<td><input type="number" class="duration small-input" value="${item.duration}" min="1" onchange="calculateTimes()"></td>`;
+        
+        case 'breakAfter':
+            if (isActorBreak) return `<td></td>`;
+            return `<td><input type="number" class="break-after small-input" value="${item.breakAfter}" min="0" onchange="calculateTimes()"></td>`;
+        
+        case 'startTime':
+            if (isActorBreak) {
+                return `<td class="time-cell"><input type="time" class="start-time" value="${item.startTime || ''}" onchange="calculateTimes()"></td>`;
+            }
+            const isFirstScene = sceneNumber === 1;
+            const isReadonly = sceneNumber > 1;
+            return `<td class="time-cell"><input type="time" class="start-time" value="${item.startTime}" ${isReadonly ? 'readonly style="background: #e8f5e9;"' : ''} ${isFirstScene ? 'onchange="calculateTimes()"' : ''}></td>`;
+        
+        case 'endTime':
+            const endTime = isActorBreak && item.startTime ? minutesToTime(timeToMinutes(item.startTime) + (item.duration || 15)) : '--:--';
+            return `<td class="time-cell end-time">${endTime}</td>`;
+        
+        case 'style':
+            if (isActorBreak) return `<td></td>`;
+            return `<td><textarea>${item.style}</textarea></td>`;
+        
+        case 'accessories':
+            if (isActorBreak) return `<td></td>`;
+            return `<td><textarea>${item.accessories}</textarea></td>`;
+        
+        case 'notes':
+            if (isActorBreak) return `<td></td>`;
+            return `<td><textarea>${item.notes}</textarea></td>`;
+        
+        case 'actions':
+            if (isActorBreak) {
+                return `<td><button class="delete-btn" onclick="deleteRow(${index}, event)">DEL</button></td>`;
+            }
+            return `<td>
                 <button class="skip-btn ${item.skipped ? 'active' : ''}" onclick="toggleSkip(${index})" title="${item.skipped ? 'Unskip scene' : 'Skip scene'}">${item.skipped ? 'UNSKIP' : 'SKIP'}</button>
                 <button class="delete-btn" onclick="deleteRow(${index}, event)">DEL</button>
-            </td>
-        `;
+            </td>`;
+        
+        default:
+            return `<td></td>`;
     }
+}
+
+// Helper function to build row HTML
+function buildRowHTML(item, index, sceneNumber) {
+    const isActorBreak = item.type === 'actor-break';
+    const columns = isActorBreak ? ACTOR_BREAK_COLUMNS : SCENE_COLUMNS;
+    
+    const cells = columns.map(col => renderCell(item, index, sceneNumber, col.key, isActorBreak)).join('');
+    return cells;
 }
 
 // Helper function to setup actor drop zone listeners
