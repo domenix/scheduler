@@ -52,6 +52,81 @@ function loadFromLocalStorage() {
     return false;
 }
 
+// Manual save - saves to localStorage and syncs to database if online
+async function manualSave(event) {
+    const saveBtn = event.currentTarget;
+    const originalText = saveBtn.innerHTML;
+
+    saveCurrentData();
+    saveToLocalStorage();
+
+    if (navigator.onLine && supabase) {
+        saveBtn.innerHTML = '⏳ Saving...';
+        const success = await saveToSupabase();
+        if (success) {
+            saveBtn.innerHTML = '✓ Saved';
+            saveBtn.style.backgroundColor = '#4caf50';
+        } else {
+            saveBtn.innerHTML = '⚠ Local only';
+            saveBtn.style.backgroundColor = '#ff9800';
+        }
+    } else {
+        saveBtn.innerHTML = '✓ Saved locally';
+        saveBtn.style.backgroundColor = '#4caf50';
+        updateSyncStatus('offline');
+    }
+
+    // Reset button after 2 seconds
+    setTimeout(() => {
+        saveBtn.innerHTML = originalText;
+        saveBtn.style.backgroundColor = '';
+    }, 2000);
+}
+
+// Manual load - loads from localStorage and overwrites database if online
+async function manualLoad(event) {
+    const loadBtn = event.currentTarget;
+    const originalText = loadBtn.innerHTML;
+
+    const loaded = loadFromLocalStorage();
+    if (loaded) {
+        loadBtn.innerHTML = '⏳ Loading...';
+
+        // Refresh UI with loaded data
+        renderDayTabs();
+        renderActors();
+        renderTable();
+        updateTitle();
+        updateDeleteDayButton();
+        updateDayNotes();
+
+        // If online, overwrite database with the loaded local data
+        if (navigator.onLine && supabase) {
+            const success = await saveToSupabase();
+            if (success) {
+                loadBtn.innerHTML = '✓ Loaded';
+                loadBtn.style.backgroundColor = '#4caf50';
+            } else {
+                loadBtn.innerHTML = '✓ Loaded (no sync)';
+                loadBtn.style.backgroundColor = '#ff9800';
+            }
+        } else {
+            loadBtn.innerHTML = '✓ Loaded';
+            loadBtn.style.backgroundColor = '#4caf50';
+            updateSyncStatus('offline');
+        }
+    } else {
+        loadBtn.innerHTML = '✗ No data';
+        loadBtn.style.backgroundColor = '#f44336';
+    }
+
+    // Reset button after 2 seconds
+    setTimeout(() => {
+        loadBtn.innerHTML = originalText;
+        loadBtn.style.backgroundColor = '';
+    }, 2000);
+}
+
 // Save to Supabase
 async function saveToSupabase() {
     if (!supabase) return false;
@@ -147,6 +222,19 @@ function debouncedAutoSave() {
     autoSaveTimer = setTimeout(() => {
         saveCurrentData();
     }, 1000);
+}
+
+// Register service worker for offline support
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(registration => {
+                console.log('ServiceWorker registered:', registration.scope);
+            })
+            .catch(error => {
+                console.log('ServiceWorker registration failed:', error);
+            });
+    });
 }
 
 // Initialize data on page load

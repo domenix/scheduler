@@ -4,7 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4caf50">
+    <meta name="description" content="Offline shooting schedule generator with multi-day support">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Schedule">
     <title>Shooting Schedule Template</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -25,6 +31,8 @@
                 <button class="btn-primary" onclick="addRow()">+ Add Scene</button>
                 <button class="btn-primary" onclick="addMakeup()">+ Add Makeup</button>
                 <button class="btn-primary" onclick="printSchedule()">🖨️ Print</button>
+                <button class="btn-primary" onclick="manualSave(event)">💾 Save</button>
+                <button class="btn-primary" onclick="manualLoad(event)">📂 Load</button>
                 <button id="deleteDayBtn" class="btn-danger delete-day-btn" onclick="deleteDay(event)"
                     style="display: none;">Delete Day</button>
                 <div class="clock-controls">
