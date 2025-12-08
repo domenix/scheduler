@@ -1840,6 +1840,9 @@ function importFromCSV() {
         const day = getCurrentDay();
         if (!day.actors) day.actors = [];
         
+        // Preserve existing actor-breaks
+        const existingActorBreaks = day.scenes.filter(s => s.type === 'actor-break');
+        
         const newScenes = [];
         const createdActors = [];
         
@@ -1884,11 +1887,11 @@ function importFromCSV() {
             });
         });
         
-        // Overwrite current day's scenes
-        day.scenes = newScenes;
+        // Merge: actor-breaks first, then imported scenes
+        day.scenes = [...existingActorBreaks, ...newScenes];
         
         // Re-render and save
-        renderActors(); // Update actor chips
+        renderActors();
         renderTable();
         saveCurrentData();
         await autoSave();
