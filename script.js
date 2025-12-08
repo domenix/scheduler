@@ -1790,6 +1790,116 @@ function calculateEndTime(scene) {
     return minutesToTime(end);
 }
 
+function importFromCSV() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv';
+    
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const text = await file.text();
+        const rows = [];
+        
+        // Parse CSV properly handling multi-line quoted fields
+        let currentRow = [];
+        let currentField = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            const nextChar = text[i + 1];
+            
+            if (char === '"') {
+                if (inQuotes && nextChar === '"') {
+                    currentField += '"';
+                    i++; // Skip next quote
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (char === ',' && !inQuotes) {
+                currentRow.push(currentField.trim());
+                currentField = '';
+            } else if (char === '\n' && !inQuotes) {
+                currentRow.push(currentField.trim());
+                if (currentRow.some(f => f)) rows.push(currentRow);
+                currentRow = [];
+                currentField = '';
+            } else {
+                currentField += char;
+            }
+        }
+        
+        // Add last field/row if exists
+        if (currentField || currentRow.length) {
+            currentRow.push(currentField.trim());
+            if (currentRow.some(f => f)) rows.push(currentRow);
+        }
+        
+        const day = getCurrentDay();
+        if (!day.actors) day.actors = [];
+        
+        const newScenes = [];
+        const createdActors = [];
+        
+        // Skip header row
+        rows.slice(1).forEach(fields => {
+            if (fields.length < 11) return;
+            
+            // Parse actors - split by semicolon and trim
+            const actorNames = fields[2] ? fields[2].split(';').map(n => n.trim()) : [];
+            
+            // Auto-create missing actors
+            actorNames.forEach(name => {
+                if (name && !day.actors.find(a => a.name === name)) {
+                    const newActor = {
+                        id: 'actor-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+                        name: name
+                    };
+                    day.actors.push(newActor);
+                    createdActors.push(name);
+                }
+            });
+            
+            // Map actor names to IDs
+            const actorIds = actorNames.map(name => {
+                const actor = day.actors.find(a => a.name === name);
+                return actor ? actor.id : null;
+            }).filter(id => id !== null);
+            
+            newScenes.push({
+                type: 'scene',
+                title: fields[1] || '',
+                location: fields[3] || '',
+                duration: parseInt(fields[4]) || 10,
+                breakAfter: parseInt(fields[5]) || 0,
+                startTime: fields[6] || '',
+                actorIds: actorIds,
+                style: fields[8] || '',
+                accessories: fields[9] || '',
+                notes: fields[10] || '',
+                skipped: fields[11] === 'Yes',
+                optional: fields[12] === 'Yes'
+            });
+        });
+        
+        // Overwrite current day's scenes
+        day.scenes = newScenes;
+        
+        // Re-render and save
+        renderActors(); // Update actor chips
+        renderTable();
+        saveCurrentData();
+        await autoSave();
+        
+        const message = `Imported ${newScenes.length} scenes successfully.` + 
+                       (createdActors.length > 0 ? `\nCreated ${createdActors.length} new actors: ${createdActors.join(', ')}` : '');
+        alert(message);
+    };
+    
+    input.click();
+}
 
 function exportToCSV() {
     const day = getCurrentDay();
