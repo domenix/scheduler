@@ -1814,7 +1814,7 @@ function importFromCSV() {
             if (char === '"') {
                 if (inQuotes && nextChar === '"') {
                     currentField += '"';
-                    i++; // Skip next quote
+                    i++;
                 } else {
                     inQuotes = !inQuotes;
                 }
@@ -1831,7 +1831,6 @@ function importFromCSV() {
             }
         }
         
-        // Add last field/row if exists
         if (currentField || currentRow.length) {
             currentRow.push(currentField.trim());
             if (currentRow.some(f => f)) rows.push(currentRow);
@@ -1840,17 +1839,13 @@ function importFromCSV() {
         const day = getCurrentDay();
         if (!day.actors) day.actors = [];
         
-        // Preserve existing actor-breaks
-        const existingActorBreaks = day.scenes.filter(s => s.type === 'actor-break');
-        
         const newScenes = [];
         const createdActors = [];
         
-        // Skip header row
         rows.slice(1).forEach(fields => {
             if (fields.length < 11) return;
             
-            // Parse actors - split by semicolon and trim
+            const sceneType = fields[13] || 'scene';
             const actorNames = fields[2] ? fields[2].split(';').map(n => n.trim()) : [];
             
             // Auto-create missing actors
@@ -1865,38 +1860,45 @@ function importFromCSV() {
                 }
             });
             
-            // Map actor names to IDs
             const actorIds = actorNames.map(name => {
                 const actor = day.actors.find(a => a.name === name);
                 return actor ? actor.id : null;
             }).filter(id => id !== null);
             
-            newScenes.push({
-                type: 'scene',
-                title: fields[1] || '',
-                location: fields[3] || '',
-                duration: parseInt(fields[4]) || 10,
-                breakAfter: parseInt(fields[5]) || 0,
-                startTime: fields[6] || '',
-                actorIds: actorIds,
-                style: fields[8] || '',
-                accessories: fields[9] || '',
-                notes: fields[10] || '',
-                skipped: fields[11] === 'Yes',
-                optional: fields[12] === 'Yes'
-            });
+            if (sceneType === 'actor-break') {
+                newScenes.push({
+                    type: 'actor-break',
+                    title: fields[1] || 'Makeup',
+                    actorIds: actorIds,
+                    duration: parseInt(fields[4]) || 15,
+                    startTime: fields[6] || ''
+                });
+            } else {
+                newScenes.push({
+                    type: 'scene',
+                    title: fields[1] || '',
+                    location: fields[3] || '',
+                    duration: parseInt(fields[4]) || 10,
+                    breakAfter: parseInt(fields[5]) || 0,
+                    startTime: fields[6] || '',
+                    actorIds: actorIds,
+                    style: fields[8] || '',
+                    accessories: fields[9] || '',
+                    notes: fields[10] || '',
+                    skipped: fields[11] === 'Yes',
+                    optional: fields[12] === 'Yes'
+                });
+            }
         });
         
-        // Merge: actor-breaks first, then imported scenes
-        day.scenes = [...existingActorBreaks, ...newScenes];
+        day.scenes = newScenes;
         
-        // Re-render and save
         renderActors();
         renderTable();
         saveCurrentData();
         await autoSave();
         
-        const message = `Imported ${newScenes.length} scenes successfully.` + 
+        const message = `Imported ${newScenes.length} items successfully.` + 
                        (createdActors.length > 0 ? `\nCreated ${createdActors.length} new actors: ${createdActors.join(', ')}` : '');
         alert(message);
     };
@@ -1906,59 +1908,39 @@ function importFromCSV() {
 
 function exportToCSV() {
     const day = getCurrentDay();
-    if (!day) return;
-
-    // CSV header
-    let csv = 'Scene,Title,Actors,Location,Duration,Break After,Start Time,End Time,Style,Accessories,Notes,Skipped,Optional\n';
-
     const scenes = getActiveScenes();
-    let sceneNumber = 1;
+    
+    let csv = 'Scene,Title,Actors,Location,Duration,Break After,Start Time,End Time,Style,Accessories,Notes,Skipped,Optional,Type\n';
 
-    scenes.forEach(item => {
+    scenes.forEach((item, index) => {
         if (item.type === 'actor-break') {
-            // Skip makeup/actor breaks in export
-            return;
+            // Export actor-break
+            const actorNames = (item.actorIds || []).map(actorId => {
+                const actor = day.actors.find(a => a.id === actorId);
+                return actor ? actor.name : '';
+            }).filter(n => n).join('; ');
+            
+            csv += `"👤","${(item.title || '').replace(/"/g, '""')}","${actorNames}","","${item.duration || 15}","","${item.startTime || ''}","","","","","","","actor-break"\n`;
+        } else {
+            // Export regular scene
+            const actorNames = (item.actorIds || []).map(actorId => {
+                const actor = day.actors.find(a => a.id === actorId);
+                return actor ? actor.name : '';
+            }).filter(n => n).join('; ');
+            
+            const sceneNum = index + 1 - scenes.slice(0, index).filter(s => s.type === 'actor-break').length;
+            const endTime = document.querySelectorAll('#scheduleBody tr:not(.break-row)')[index]?.querySelector('.end-time')?.textContent || '';
+            
+            csv += `"${sceneNum}","${(item.title || '').replace(/"/g, '""')}","${actorNames}","${item.location || ''}","${item.duration || ''}","${item.breakAfter || ''}","${item.startTime || ''}","${endTime}","${(item.style || '').replace(/"/g, '""')}","${(item.accessories || '').replace(/"/g, '""')}","${(item.notes || '').replace(/"/g, '""')}","${item.skipped ? 'Yes' : 'No'}","${item.optional ? 'Yes' : 'No'}","scene"\n`;
         }
-
-        // Get actor names
-        const actorNames = (item.actorIds || []).map(actorId => {
-            const actor = day.actors.find(a => a.id === actorId);
-            return actor ? actor.name : '';
-        }).filter(Boolean).join('; ');
-
-        // Escape and quote fields
-        const escape = (str) => `"${String(str || '').replace(/"/g, '""')}"`;
-
-        const row = [
-            sceneNumber,
-            escape(item.title),
-            escape(actorNames),
-            escape(item.location),
-            item.duration || 0,
-            item.breakAfter || 0,
-            escape(item.startTime),
-            escape(calculateEndTime(item)),
-            escape(item.style),
-            escape(item.accessories),
-            escape(item.notes),
-            item.skipped ? 'Yes' : 'No',
-            item.optional ? 'Yes' : 'No'
-        ];
-
-        csv += row.join(',') + '\n';
-        sceneNumber++;
     });
 
-    // Create and download file
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${day.name.replace(/\s+/g, '_')}_schedule.csv`;
-    document.body.appendChild(a);
+    a.download = `${day.name}_schedule.csv`;
     a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
 }
 
 // Actor management
