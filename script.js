@@ -1906,6 +1906,63 @@ function importFromCSV() {
     input.click();
 }
 
+function exportToJSON() {
+    const day = getCurrentDay();
+    
+    const exportData = {
+        name: day.name,
+        notes: day.notes || '',
+        defaultStartTime: day.defaultStartTime,
+        actors: day.actors || [],
+        scenes: day.scenes || []
+    };
+    
+    const json = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${day.name}_schedule.json`;
+    a.click();
+}
+
+function importFromJSON() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        try {
+            const text = await file.text();
+            const importedData = JSON.parse(text);
+            
+            const day = getCurrentDay();
+            
+            // Import all data
+            day.actors = importedData.actors || [];
+            day.scenes = importedData.scenes || [];
+            day.notes = importedData.notes || '';
+            day.defaultStartTime = importedData.defaultStartTime || '10:30';
+            
+            // Re-render and save
+            renderActors();
+            renderTable();
+            updateDayNotes();
+            saveCurrentData();
+            await autoSave();
+            
+            alert(`Imported "${importedData.name}" successfully.`);
+        } catch (error) {
+            alert('Error importing JSON: ' + error.message);
+        }
+    };
+    
+    input.click();
+}
+
 function exportToCSV() {
     const day = getCurrentDay();
     const scenes = getActiveScenes();
