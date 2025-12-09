@@ -4,6 +4,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 let supabase;
 let syncStatusElement;
 
+
 // Initialize Supabase client
 function initSupabase() {
     if (typeof supabase === 'undefined' && window.supabase) {
