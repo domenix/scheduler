@@ -2,9 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(curl:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(open:*)"
     ],
-    "deny": ["Read(deprecated/**)"],
+    "deny": [
+      "Read(deprecated/**)"
+    ],
     "ask": []
   }
 }

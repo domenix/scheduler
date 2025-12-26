@@ -503,7 +503,6 @@ button {
 
 .delete-day-btn.delete-confirm {
     background: var(--color-warning);
-    animation: pulse 0.5s ease-in-out infinite;
 }
 
 .delete-day-btn.delete-confirm:hover {
@@ -591,11 +590,19 @@ button {
 
 .clock-btn.confirm {
     background: var(--color-warning);
-    animation: pulse 0.5s ease-in-out infinite;
 }
 
 .clock-btn.confirm:hover {
     background: var(--color-warning-hover);
+}
+
+.clock-btn.confirm .pulse-inner,
+.delete-btn.delete-confirm .pulse-inner,
+.delete-day-btn.delete-confirm .pulse-inner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse-content 0.5s ease-in-out infinite;
 }
 
 /* Reset button already uses btn-danger class */
@@ -720,10 +727,54 @@ input:focus, select:focus, textarea:focus {
     color: var(--text-secondary);
     text-align: center;
     user-select: none;
+    padding: 8px 4px;
 }
 
 .drag-handle:hover {
     color: var(--color-drag-border);
+}
+
+.drag-handle-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.drag-icon {
+    cursor: move;
+    user-select: none;
+    font-size: 18px;
+}
+
+.insert-scene-btn {
+    background: transparent;
+    color: var(--neutral-500);
+    border: none;
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+    font-weight: normal;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 0;
+    line-height: 1;
+    /* Ensure good tap target for tablets */
+    min-width: 40px;
+    min-height: 40px;
+}
+
+.insert-scene-btn:hover {
+    color: var(--neutral-700);
+    transform: scale(1.2);
+}
+
+.insert-scene-btn:active {
+    color: var(--neutral-900);
+    transform: scale(1.0);
 }
 
 .dragging {
@@ -765,7 +816,6 @@ input:focus, select:focus, textarea:focus {
 
 .delete-btn.delete-confirm {
     background: var(--color-warning);
-    animation: pulse 0.5s ease-in-out infinite;
     font-size: 16px;
 }
 
@@ -776,6 +826,11 @@ input:focus, select:focus, textarea:focus {
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.1); }
+}
+
+@keyframes pulse-content {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.8; }
 }
 
 .copy-warning {

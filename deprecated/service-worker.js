@@ -1,4 +1,4 @@
-const CACHE_NAME = 'schedule-generator-v1';
+const CACHE_NAME = 'schedule-generator-v2';
 const urlsToCache = [
   './',
   './index.html',
@@ -34,7 +34,13 @@ self.addEventListener('fetch', event => {
 
         return fetch(fetchRequest).then(response => {
           // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+          if (!response || response.status !== 200) {
+            return response;
+          }
+
+          // Only cache same-origin or opaque responses (not CORS)
+          // Don't cache Supabase API calls
+          if (event.request.url.includes('supabase.co')) {
             return response;
           }
 

@@ -1,14 +1,17 @@
 // Supabase Configuration
 const SUPABASE_URL = 'https://bvamjkvjeiynzlnzgmfb.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2YW1qa3ZqZWl5bnpsbnpnbWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4NTg0OTIsImV4cCI6MjA4MDQzNDQ5Mn0.XffpHpFIPo3AFofF-h0a5zrh-u_In3pDLcGdKzLyffM';
-let supabase;
+let supabaseConnection;
 let syncStatusElement;
 
 
 // Initialize Supabase client
 function initSupabase() {
-    if (typeof supabase === 'undefined' && window.supabase) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    if (typeof supabaseConnection === 'undefined' && window.supabase) {
+        supabaseConnection = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('Supabase client initialized');
+    } else if (!window.supabase) {
+        console.warn('Supabase library not loaded - using localStorage only');
     }
 }
 
@@ -72,7 +75,7 @@ async function manualSave(event) {
         saveCurrentData();
         saveToLocalStorage();
 
-        if (navigator.onLine && supabase) {
+        if (navigator.onLine && supabaseConnection) {
             saveBtn.innerHTML = '⏳ Saving...';
             saveBtn.disabled = true;
             const success = await saveToSupabase();
@@ -132,7 +135,7 @@ async function manualLoad(event) {
             updateDayNotes();
 
             // If online, overwrite database with the loaded local data
-            if (navigator.onLine && supabase) {
+            if (navigator.onLine && supabaseConnection) {
                 const success = await saveToSupabase();
                 if (success) {
                     loadBtn.innerHTML = '✓ Loaded';
@@ -166,7 +169,7 @@ async function manualLoad(event) {
 
 // Save to Supabase
 async function saveToSupabase() {
-    if (!supabase) return false;
+    if (!supabaseConnection) return false;
 
     updateSyncStatus('syncing');
 
@@ -174,7 +177,7 @@ async function saveToSupabase() {
         // Use a fixed ID for single-user scenario
         const scheduleId = 'main-schedule';
 
-        const { error } = await supabase
+        const { error } = await supabaseConnection
             .from('schedules')
             .upsert({
                 id: scheduleId,
@@ -196,14 +199,14 @@ async function saveToSupabase() {
 
 // Load from Supabase
 async function loadFromSupabase() {
-    if (!supabase) return false;
+    if (!supabaseConnection) return false;
 
     updateSyncStatus('syncing');
 
     try {
         const scheduleId = 'main-schedule';
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseConnection
             .from('schedules')
             .select('*')
             .eq('id', scheduleId)
@@ -243,7 +246,7 @@ let notesDebounceTimer = null;
 async function autoSave() {
     saveToLocalStorage();
 
-    if (navigator.onLine && supabase) {
+    if (navigator.onLine && supabaseConnection) {
         await saveToSupabase();
     } else {
         updateSyncStatus('offline');
@@ -261,18 +264,8 @@ function debouncedAutoSave() {
     }, 1000);
 }
 
-// Register service worker for offline support
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js')
-            .then(registration => {
-                console.log('ServiceWorker registered:', registration.scope);
-            })
-            .catch(error => {
-                console.log('ServiceWorker registration failed:', error);
-            });
-    });
-}
+// Service worker removed to prevent caching conflicts with Supabase
+// The app still works offline via localStorage fallback
 
 // Initialize data on page load
 // Clean up orphaned actor IDs and deprecated fields from all scenes
@@ -310,7 +303,7 @@ async function initializeData() {
     initSupabase();
 
     // Try to load from Supabase first if online
-    if (navigator.onLine && supabase) {
+    if (navigator.onLine && supabaseConnection) {
         const loaded = await loadFromSupabase();
         if (loaded) {
             saveToLocalStorage(); // Sync to localStorage
@@ -339,7 +332,7 @@ async function initializeData() {
 // Listen for online/offline events
 window.addEventListener('online', async () => {
     console.log('Back online');
-    if (supabase) {
+    if (supabaseConnection) {
         await saveToSupabase();
     }
 });
@@ -570,7 +563,7 @@ function deleteDay(event) {
     } else {
         // First click - show confirmation state
         button.classList.add('delete-confirm');
-        button.innerHTML = '! Confirm Delete';
+        button.innerHTML = '<span class="pulse-inner">!</span> Confirm Delete';
     }
 }
 
@@ -613,8 +606,20 @@ let swipeThreshold = 80; // pixels to swipe inward to trigger optional
 let dropPosition = null; // 'before' or 'after'
 
 function handleDragStart(e) {
-    draggedIndex = parseInt(e.currentTarget.dataset.index);
-    e.currentTarget.classList.add('dragging');
+    // Only allow dragging from the drag handle (not the entire row)
+    if (!e.target.classList.contains('drag-handle') &&
+        !e.target.classList.contains('drag-icon') &&
+        !e.target.closest('.drag-handle')) {
+        e.preventDefault();
+        return false;
+    }
+
+    // Find the parent row (since currentTarget is the drag handle cell)
+    const row = e.currentTarget.closest('tr');
+    if (row) {
+        draggedIndex = parseInt(row.dataset.index);
+        row.classList.add('dragging');
+    }
 }
 
 function handleDragOver(e) {
@@ -720,7 +725,11 @@ function handleDrop(e) {
 }
 
 function handleDragEnd(e) {
-    e.currentTarget.classList.remove('dragging');
+    // Find the parent row (since currentTarget is now the drag handle cell)
+    const row = e.currentTarget.closest('tr');
+    if (row) {
+        row.classList.remove('dragging');
+    }
     document.querySelectorAll('.drag-over-before, .drag-over-after, .drag-over-swap').forEach(row => {
         row.classList.remove('drag-over-before', 'drag-over-after', 'drag-over-swap');
     });
@@ -730,8 +739,15 @@ function handleDragEnd(e) {
 
 // Touch event handlers for mobile devices
 function handleTouchStart(e) {
+    // Don't allow dragging if touching the insert button
+    if (e.target.classList.contains('insert-scene-btn') || e.target.closest('.insert-scene-btn')) {
+        return;
+    }
+
     // Only allow dragging/swiping from the drag handle
-    if (!e.target.classList.contains('drag-handle') && !e.target.closest('.drag-handle')) {
+    if (!e.target.classList.contains('drag-handle') &&
+        !e.target.classList.contains('drag-icon') &&
+        !e.target.closest('.drag-handle')) {
         return;
     }
 
@@ -1339,7 +1355,7 @@ function deleteRow(index, event) {
     } else {
         // First click - show confirmation state
         button.classList.add('delete-confirm');
-        button.innerHTML = '!';
+        button.innerHTML = '<span class="pulse-inner">!</span>';
     }
 }
 
@@ -1430,10 +1446,15 @@ function buildActorChips(item, index) {
 function renderCell(item, index, sceneNumber, columnKey, isActorBreak) {
     const actorChips = buildActorChips(item, index);
     const day = getCurrentDay();
-    
+
     switch(columnKey) {
         case 'drag':
-            return `<td class="drag-handle">⋮⋮</td>`;
+            return `<td class="drag-handle" draggable="true">
+                <div class="drag-handle-content">
+                    <span class="drag-icon">⋮⋮</span>
+                    <button class="insert-scene-btn" onclick="insertSceneAfter(${index}, event)">+</button>
+                </div>
+            </td>`;
         
         case 'sceneNum':
             if (isActorBreak) {
@@ -1604,7 +1625,6 @@ function renderTable() {
     let sceneNumber = 1;
     scenes.forEach((item, index) => {
         const row = document.createElement('tr');
-        row.draggable = true;
         row.dataset.index = index;
 
         // Apply classes based on item type and state
@@ -1615,18 +1635,25 @@ function renderTable() {
             if (item.optional) row.classList.add('optional-row');
         }
 
-        // Add drag and touch event listeners
-        row.addEventListener('dragstart', handleDragStart);
+        // Set row HTML first
+        row.innerHTML = buildRowHTML(item, index, sceneNumber);
+
+        // Add drag event listeners to the drag handle cell
+        const dragHandle = row.querySelector('.drag-handle');
+        if (dragHandle) {
+            dragHandle.addEventListener('dragstart', handleDragStart);
+            dragHandle.addEventListener('dragend', handleDragEnd);
+        }
+
+        // Add drop and dragover to the row (for drop targets)
         row.addEventListener('dragover', handleDragOver);
         row.addEventListener('drop', handleDrop);
-        row.addEventListener('dragend', handleDragEnd);
+
+        // Add touch event listeners to the row
         row.addEventListener('touchstart', handleTouchStart);
         row.addEventListener('touchmove', handleTouchMove);
         row.addEventListener('touchend', handleTouchEnd);
 
-        // Set row HTML
-        row.innerHTML = buildRowHTML(item, index, sceneNumber);
-        
         // Setup actor drop zone listeners
         setupActorDropZone(row, index);
 
@@ -1692,6 +1719,35 @@ function addRow() {
     autoSave();
 }
 
+function insertSceneAfter(index, event) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    const scenes = getActiveScenes();
+    const newScene = {
+        type: "scene",
+        scene: index + 2, // Will be renumbered automatically during render
+        title: "New Scene",
+        location: "Location",
+        duration: 10,
+        breakAfter: 0,
+        startTime: "",
+        actorIds: [],
+        style: "",
+        accessories: "",
+        notes: "",
+        skipped: false,
+        optional: false
+    };
+
+    // Insert after the current index
+    scenes.splice(index + 1, 0, newScene);
+    renderTable();
+    autoSave();
+}
+
 let originalStartTime = "10:30"; // Store original start time
 
 function startNow(event) {
@@ -1726,7 +1782,7 @@ function startNow(event) {
     } else {
         // First click - show confirmation
         button.classList.add('confirm');
-        button.innerHTML = '!';
+        button.innerHTML = '<span class="pulse-inner">!</span>';
     }
 }
 
@@ -1757,7 +1813,7 @@ function resetTime(event) {
     } else {
         // First click - show confirmation
         button.classList.add('confirm');
-        button.innerHTML = '!';
+        button.innerHTML = '<span class="pulse-inner">!</span>';
     }
 }
 
