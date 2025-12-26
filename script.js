@@ -1514,14 +1514,17 @@ function renderCell(item, index, sceneNumber, columnKey, isActorBreak) {
                 return `<td><button class="delete-btn" onclick="deleteRow(${index}, event)">DEL</button></td>`;
             }
             
-            // Determine button state
+            // Determine button state (show N+1 state - what it will become)
             let stateBtn = '';
             if (item.skipped) {
-                stateBtn = `<button class="skip-btn active" onclick="toggleSceneState(${index})" title="Currently skipped - click to mark optional" style="background: var(--color-danger);">SKIP</button>`;
+                // Currently skipped -> will become optional
+                stateBtn = `<button class="skip-btn active" onclick="toggleSceneState(${index})" title="Currently skipped - click to mark optional" style="background: var(--color-danger);">OPT</button>`;
             } else if (item.optional) {
-                stateBtn = `<button class="skip-btn active" onclick="toggleSceneState(${index})" title="Currently optional - click to mark normal" style="background: var(--color-warning);">OPT</button>`;
+                // Currently optional -> will become normal
+                stateBtn = `<button class="skip-btn active" onclick="toggleSceneState(${index})" title="Currently optional - click to mark normal" style="background: var(--color-warning);">NORM</button>`;
             } else {
-                stateBtn = `<button class="skip-btn" onclick="toggleSceneState(${index})" title="Currently normal - click to skip" style="background: var(--neutral-500);">NORM</button>`;
+                // Currently normal -> will become skipped
+                stateBtn = `<button class="skip-btn" onclick="toggleSceneState(${index})" title="Currently normal - click to skip" style="background: var(--neutral-500);">SKIP</button>`;
             }
             
             return `<td>
